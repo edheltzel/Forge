@@ -1,0 +1,6 @@
+---
+description: Forge rails
+alwaysApply: true
+---
+
+Read AGENTS.md. Run /forge-interview before scaffolding. Never pick a stack silently.
