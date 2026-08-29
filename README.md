@@ -1,19 +1,7 @@
 # Forge
 
-Repeatable agentic rails for software in ~/Developer. Framework, not a product app.
+Forge is the rails for software you keep in `~/Developer`. It is a framework, not the product you are building.
 
-## First command
+Use it when you want that same setup on a new repo or on an app you already have, and you want to pick the stack yourself.
 
-In Cursor, Claude Code, or omp at this repo:
-
-```
-/forge-interview
-```
-
-If slash commands are not wired:
-
-```
-Read skills/forge-interview/SKILL.md and run it now.
-```
-
-The skill always asks what you are building, greenfield vs convert, and which stack you want (task runner, host, data, IdP). No hidden default. Each run asks whether to write a spec.
+First run: [Getting started](docs/getting-started.md).
