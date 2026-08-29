@@ -1,7 +1,6 @@
 # Forge
 
 Repeatable agentic rails for software in ~/Developer. Framework, not a product app.
-It does not pick Turbo, Nx, Vercel, Cloudflare, Supabase, Convex, Clerk, or Better Auth for you.
 
 ## First command
 
