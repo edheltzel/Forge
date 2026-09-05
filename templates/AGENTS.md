@@ -1,9 +1,12 @@
 # templates
 
-Software rails (greenfield / brownfield / software snippets) apply **only** when `/forge-interview` gets an explicit software toggle.
+Software rails snippets here are **reference** for interview questions only.
 
-ICM website BASE is **not** these folders — it comes from captain SoT  
-`/Users/ed/Developer/ForgeTemplates/icm-website-workbench` via the interview apply helper.
+When `/forge-interview` gets an explicit software toggle, the apply helper **generates**
+`forge-software/` stubs from answers — it does **not** copytree these folders into the project.
+
+ICM website BASE is also **generated** from interview answers (not copied from
+`ForgeTemplates/icm-website-workbench`).
 
 ## Child DOX Index
 

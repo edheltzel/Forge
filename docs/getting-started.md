@@ -23,7 +23,7 @@ A finished Forge interview close that:
 
 - Cursor
 - The Forge repo at `~/Developer/forge`
-- Captain workbench SoT at `~/Developer/ForgeTemplates/icm-website-workbench`
+- Captain workbench at `~/Developer/ForgeTemplates/icm-website-workbench` (interview reference only — not copied into targets)
 
 ## Step 1: Open Forge
 
@@ -50,7 +50,7 @@ Read skills/forge-interview/SKILL.md and run it now.
 ## Step 3: Answer mode + product
 
 1. Reply with a new path, e.g. `~/Developer/demo-icm-site`.
-2. Reply **website** for the workbench pipe.
+2. Reply **website** for the website ICM pipe (stages 01–07).
 
 You should then see website intake questions, one at a time.
 
@@ -77,23 +77,23 @@ Answer one at a time (example set):
 
 ## Step 6: Apply (or watch the agent apply)
 
-The agent should lay ICM BASE from the workbench SoT, write `setup/client.md`, add `brand-vault/` and `stages/02-scaffold/references/stack-astro.md`, then stop.
+The agent should **generate** ICM BASE from interview answers, write `setup/client.md` (+ `setup/answers.json`), add `brand-vault/` and `stages/02-scaffold/references/stack-astro.md`, then stop. No workbench copytree.
 
 Non-interactive prove from the Forge repo:
 
 ```bash
 python3 skills/forge-interview/apply_icm_base.py \
-  --target /tmp/fm301-demo-icm \
+  --target /tmp/fm304-demo-icm \
   --product website \
   --answers-json '{"client_name":"Demo","start_mode":"both","stack":"astro","host":"cloudflare","content":"markdown","figma":"key-screens","shipped_live":"staging then prod","a11y":"WCAG 2.2 AA","brand_vault":true,"skills":[],"software_rails":false}'
 ```
 
-You should see workbench-shaped folders under the target (`AGENTS.md`, `_config/`, `setup/client.md`, `stages/01-audit-ia` … `07-cd`, `brand-vault/`). You should **not** see `apps/web` monorepo rails unless software toggle was yes.
+You should see generated ICM folders under the target (`AGENTS.md`, `_config/`, `setup/client.md`, `stages/01-audit-ia` … `07-cd`, `brand-vault/`). You should **not** see `apps/` monorepo rails, and files must not be a mass-identical dump of the workbench SoT.
 
 ## What you've learned
 
 - Start Forge with `/forge-interview`
-- ICM BASE comes first from captain workbench SoT
+- ICM BASE is generated from interview answers (SoT is interview reference only)
 - Answers fill `client.md` and gate folders
 - Software rails are a separate opt-in sibling
 

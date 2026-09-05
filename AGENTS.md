@@ -14,12 +14,12 @@ Captain machine: /Users/ed/.bun/bin/codegraph. Else codegraph on PATH.
 Interview first (`/forge-interview`). Grow Me, one question at a time.
 
 ICM-as-standard for the deliverable:
-- Always lay **ICM BASE** from captain SoT (`ForgeTemplates/icm-website-workbench` for website; `ICM/_core` blanks for generic).
-- Interview answers → `setup/client.md` + gated adds (brand-vault, stack ref stubs, optional skills, keep/delete stages).
+- Always **generate** a minimal **ICM BASE** from interview answers (website stages 01–07 or generic listed stages). Do **not** copytree workbench / ICM-reuseable-template / product workspaces into the target.
+- Interview answers → durable artifacts (`setup/client.md`, `setup/answers.json`, `CONTEXT.md`) + gated adds (brand-vault, stack ref stubs, optional skills, keep/delete stages).
 - Stop after apply. No feature build.
-- Captain folders are layout SoT. `skills/forge-interview` drives the interview; it is not the folder ontology.
+- Captain SoT folders are **read-only reference** for the interviewing agent. `skills/forge-interview` + `apply_icm_base.py` generate the target; they do not dump SoT trees.
 
-Software rails (`templates/greenfield`, `templates/brownfield`, `templates/software`) only on an **explicit separate toggle**. Sibling under the target (e.g. `forge-software/`), never a substitute for ICM BASE. When that toggle is on: ask Turbo vs Nx, host, data, IdP — no silent defaults.
+Software rails only on an **explicit separate toggle**. Sibling stubs under the target (e.g. `forge-software/STACK.md`), never a substitute for ICM BASE and never a wholesale greenfield/brownfield template copy. When that toggle is on: ask Turbo vs Nx, host, data, IdP — no silent defaults.
 
 Legacy `agent-workflows/` one-liners are not the ICM apply target.
 
