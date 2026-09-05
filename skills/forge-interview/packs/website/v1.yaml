@@ -3,6 +3,7 @@ version: v1
 domain: website
 # Session expert = load this pack into the interview session (read).
 # Never dump pack body into the target workspace.
+# Every accepted experience_level 0–5 has an explicit entry (no clamp, no gaps).
 core_slots:
   - start_mode          # rebuild vs new / brief / live rebuild / both
   - existing_url_dns    # where site lives / DNS / hosting owner
@@ -27,6 +28,62 @@ levels:
       - what "live" means for them
       - accessibility bar (default WCAG 2.2 AA)
     probes: []
+  "1":
+    label: plain
+    depth: shallow
+    vocabulary: plain
+    phrase_hints:
+      - rebuild vs new (brief, live rebuild, or both)
+      - where the site lives today (URL / DNS / hosting owner)
+      - Astro or Next
+      - Cloudflare / their host (or own VPS)
+      - files vs CMS (markdown collections, headless, keep old CMS)
+      - Figma whole file vs few screens
+      - what "live" means for them
+      - accessibility bar (default WCAG 2.2 AA)
+    probes: []
+  "2":
+    label: plain
+    depth: shallow
+    vocabulary: plain
+    phrase_hints:
+      - rebuild vs new (brief, live rebuild, or both)
+      - where the site lives today (URL / DNS / hosting owner)
+      - Astro or Next
+      - Cloudflare / their host (or own VPS)
+      - files vs CMS (markdown collections, headless, keep old CMS)
+      - Figma whole file vs few screens
+      - what "live" means for them
+      - accessibility bar (default WCAG 2.2 AA)
+    probes: []
+  "3":
+    label: expert-vocab
+    depth: deep-phrasing
+    vocabulary: expert
+    phrase_hints:
+      - start_mode / greenfield vs live rebuild equity
+      - authoritative origin, DNS SOA, registrar vs host split
+      - Astro vs Next (SSR/SSG, content collections vs app router)
+      - Cloudflare Pages/Workers vs client host / own VPS
+      - markdown collections vs headless CMS vs CMS lock-in keep-old
+      - Figma full handoff vs key-screen token handoff
+      - cutover definition of done (domain, staging, analytics)
+      - WCAG 2.2 AA acceptance + assistive-tech notes
+    probes: []   # expert vocab, no L5 deep probe slots
+  "4":
+    label: expert-vocab
+    depth: deep-phrasing
+    vocabulary: expert
+    phrase_hints:
+      - start_mode / greenfield vs live rebuild equity
+      - authoritative origin, DNS SOA, registrar vs host split
+      - Astro vs Next (SSR/SSG, content collections vs app router)
+      - Cloudflare Pages/Workers vs client host / own VPS
+      - markdown collections vs headless CMS vs CMS lock-in keep-old
+      - Figma full handoff vs key-screen token handoff
+      - cutover definition of done (domain, staging, analytics)
+      - WCAG 2.2 AA acceptance + assistive-tech notes
+    probes: []   # expert vocab, no L5 deep probe slots
   "5":
     label: expert
     depth: deep

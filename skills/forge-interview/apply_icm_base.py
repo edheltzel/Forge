@@ -8,12 +8,15 @@ generator while coding — it is never a runtime copy source.
 
 Does not build product features. Software rails are opt-in sibling only.
 
-FM-325: persist experience_level + pack_id + pack_version from answers; optional
-setup/session-expert.md pointer (id/version/level only — never pack body dump).
+FM-325: persist experience_level (raw HIL int 0-5) + pack_id + pack_version;
+optional setup/session-expert.md pointer (id/version/level only — never pack body
+dump). Do not clamp/alias mid levels (1→0 / 3→5); resolve behavior from pack
+levels["N"] entry when interviewing.
 """
 from __future__ import annotations
 
 import argparse
+import re
 import json
 import shutil
 import sys
@@ -481,8 +484,41 @@ def render_client_md(answers: dict) -> str:
     return "\n".join(lines)
 
 
+def pack_yaml_path(pack_id: str = "website", pack_version: str = "v1") -> Path:
+    return Path(__file__).resolve().parent / "packs" / pack_id / f"{pack_version}.yaml"
+
+
+def assert_pack_has_level(pack_path: Path, level_i: int) -> None:
+    """Require explicit levels[\"N\"] for N in 0..5 (no clamp). Light parse — no PyYAML."""
+    if not pack_path.is_file():
+        die(f"pack not found: {pack_path}")
+    body = pack_path.read_text(encoding="utf-8")
+    # Collect quoted level keys under a top-level `levels:` block.
+    keys: set[str] = set()
+    in_levels = False
+    for line in body.splitlines():
+        if re.match(r"^levels:\s*$", line):
+            in_levels = True
+            continue
+        if in_levels:
+            if re.match(r"^[A-Za-z_][\w-]*:\s*", line) and not line.startswith(" "):
+                break
+            m = re.match(r'^\s+"(\d+)":\s*$', line)
+            if m:
+                keys.add(m.group(1))
+    missing = [str(i) for i in range(6) if str(i) not in keys]
+    if missing:
+        die(f"pack {pack_path} missing explicit level keys: {missing}")
+    if str(level_i) not in keys:
+        die(f"pack {pack_path} has no levels[{level_i!r}] entry")
+
+
 def normalize_pack_meta(answers: dict, product: str) -> dict:
-    """Ensure website answers carry pack pointer fields when experience_level set."""
+    """Ensure website answers carry pack pointer fields when experience_level set.
+
+    Keeps raw HIL experience_level (0-5). Does not rewrite mid levels to endpoints.
+    Interview resolves vocab/depth/probes from pack levels[str(level)].
+    """
     out = dict(answers)
     if product != "website":
         return out
@@ -492,12 +528,14 @@ def normalize_pack_meta(answers: dict, product: str) -> dict:
     try:
         level_i = int(level)
     except (TypeError, ValueError):
-        return out
+        die(f"experience_level must be integer 0-5, got {level!r}")
     if level_i < 0 or level_i > 5:
         die(f"experience_level must be integer 0-5, got {level!r}")
-    out["experience_level"] = level_i
+    out["experience_level"] = level_i  # persist raw; never alias 1→0 / 3→5
     out.setdefault("pack_id", "website")
     out.setdefault("pack_version", "v1")
+    pack_path = pack_yaml_path(str(out["pack_id"]), str(out["pack_version"]))
+    assert_pack_has_level(pack_path, level_i)
     return out
 
 

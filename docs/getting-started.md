@@ -55,7 +55,7 @@ Read skills/forge-interview/SKILL.md and run it now.
 
 ## Step 3b: Experience gate (0–5)
 
-Right after **website**, reply with an integer **0–5** only (0 = plain language / shallow; 5 = expert terms / deep probes). That picks the domain pack vocabulary and whether deep probes are asked. Skip this gate if you chose **generic**.
+Right after **website**, reply with an integer **0–5** only (0 = plain language / shallow; 5 = expert terms / deep probes). That loads the matching pack level entry: **0–2** plain/shallow (no deep probes), **3–4** expert phrasing still without deep probes, **5** expert + deep probes. Mid levels are not clamped to 0 or 5. Skip this gate if you chose **generic**.
 
 You should then see website intake questions, one at a time (phrased for your level).
 

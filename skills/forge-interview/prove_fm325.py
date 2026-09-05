@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""FM-325 prove: L0 vs L5 apply, pack meta, probe diff, no workbench dump."""
+"""FM-325 prove: L0 vs L5 apply, pack keys 0-5, pack meta, probe diff, no dump."""
 from __future__ import annotations
 
 import json
@@ -11,6 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 APPLY = Path(__file__).resolve().parent / "apply_icm_base.py"
 FIX = Path(__file__).resolve().parent / "fixtures"
+PACK = Path(__file__).resolve().parent / "packs" / "website" / "v1.yaml"
 L0_TARGET = Path("/tmp/fm325-L0")
 L5_TARGET = Path("/tmp/fm325-L5")
 DEEP = (
@@ -94,7 +95,35 @@ def expected_probes(path: Path) -> list[str]:
     return lines
 
 
+
+def assert_pack_levels_0_through_5() -> None:
+    """Cheap RedTeam fix: pack must define explicit keys "0".."5" (no clamp)."""
+    if not PACK.is_file():
+        raise SystemExit(f"missing pack: {PACK}")
+    body = PACK.read_text(encoding="utf-8")
+    keys = set()
+    in_levels = False
+    for line in body.splitlines():
+        if line.strip() == "levels:":
+            in_levels = True
+            continue
+        if in_levels:
+            if line and not line[0].isspace() and ":" in line:
+                break
+            s = line.strip()
+            if s.startswith('"') and '":' in s:
+                k = s.split('":', 1)[0].strip().strip('"')
+                if k.isdigit():
+                    keys.add(k)
+    missing = [str(i) for i in range(6) if str(i) not in keys]
+    if missing:
+        raise SystemExit(f"pack missing explicit level keys {missing}; found {sorted(keys)}")
+    print(f"pack levels OK: {sorted(keys, key=int)}")
+
+
 def main() -> None:
+    print("=== FM-325 prove: pack levels 0-5 ===")
+    assert_pack_levels_0_through_5()
     print("=== FM-325 prove: apply L0 ===")
     run_apply(L0_TARGET, FIX / "answers-L0.json")
     print("=== FM-325 prove: apply L5 ===")
@@ -152,7 +181,7 @@ def main() -> None:
     for k in DEEP:
         print(f"  + {k}")
     print(
-        "ASSERT OK: ICM spine both; experience_level 0 vs 5; "
+        "ASSERT OK: pack keys 0-5; ICM spine both; experience_level 0 vs 5; "
         "L5 deeper fields; no workbench/pack dump"
     )
 

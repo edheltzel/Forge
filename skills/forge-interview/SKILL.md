@@ -26,7 +26,7 @@ HARD:
 - Durable interview artifacts: `setup/client.md`, `setup/answers.json`, root `CONTEXT.md`, architecture notes as needed.
 - Software rails only if the user explicitly opts in on the **separate** software toggle. Sibling stubs generated from answers — never wholesale-copy greenfield/brownfield template trees.
 - Stop after apply. Humans edit markdown next.
-- **Experience gate (FM-325):** for website only, ask integer **0–5** immediately after product shape, before intake Q1. That level selects the versioned domain pack (vocab + probe depth). Load the pack as **session expert** (read into session). Never dump pack body into the target. Do not invent weight training or self-learning marketing.
+- **Experience gate (FM-325):** for website only, ask integer **0–5** immediately after product shape, before intake Q1. Load `packs/website/v1.yaml` **levels["N"]** for that integer (all of 0–5 are explicit — do not clamp mid levels). Vocab/depth/probes come from that entry; persist raw `experience_level`. Never dump pack body into the target. Do not invent weight training or self-learning marketing.
 
 ---
 
@@ -51,31 +51,34 @@ Ask immediately after product shape = website, **before** intake Q1:
 
 > How experienced are you with this kind of website build? Reply with an integer **0–5** only (0 = plain language / shallow; 5 = expert terms / deep probes).
 
-Wait. Accept integer 0–5 only. Re-ask if not in range.
+Wait. Accept integer 0–5 only. Re-ask if not in range. **Do not clamp** mid levels to 0 or 5.
 
-Then **load session expert** = read `skills/forge-interview/packs/website/v1.yaml` for that level into this session:
-- Record `experience_level`, `pack_id` (`website`), `pack_version` (`v1`) in answers.
-- Phrase subsequent questions with that level's vocabulary.
+Then **load session expert** = read `skills/forge-interview/packs/website/v1.yaml` **levels["N"]** for the chosen integer N into this session (every of 0–5 is explicit in the pack):
+- Record raw `experience_level` (the HIL integer), `pack_id` (`website`), `pack_version` (`v1`) in answers — do **not** rewrite 1→0 or 3→5.
+- Phrase subsequent questions with that level entry's `vocabulary` / `phrase_hints`.
 - Ask **core_slots** at every level (same ICM slots).
-- At higher levels (esp. 5), also ask that level's **probes** (additive). L0 = core 8 only, no deep probes.
+- Ask that level's **probes** only (additive when non-empty). Pack map:
+  - **0–2**: plain vocab, shallow, `probes: []` (core 8 only)
+  - **3–4**: expert vocab / deep phrasing, still `probes: []` (no L5 deep probe slots)
+  - **5**: expert vocab / deep + full L5 probes list
 - Do **not** write the pack YAML body into the target. Apply may write `setup/session-expert.md` as a pointer (id / version / level only).
 
 ## 2. Website intake (only if website)
 
-Ask one at a time. **Phrase by pack level** (plain at 0; expert terms at 5). Same ICM slots:
+Ask one at a time. **Phrase by pack level entry** (plain at 0–2; expert terms at 3–5). Same ICM slots:
 
 Core 8 (always):
 
-1. Brief, live rebuild, or both? *(L0: rebuild vs new)*
-2. Existing URL and who owns DNS / hosting today? *(L0: where the site lives)*
+1. Brief, live rebuild, or both? *(L0–2: rebuild vs new)*
+2. Existing URL and who owns DNS / hosting today? *(L0–2: where the site lives)*
 3. Astro or Next for this client?
 4. Cloudflare / own VPS, or their host?
-5. Markdown collections, headless CMS, or keep the old CMS? *(L0: files vs CMS)*
-6. Figma: full file or key screens only? *(L0: whole vs few screens)*
+5. Markdown collections, headless CMS, or keep the old CMS? *(L0–2: files vs CMS)*
+6. Figma: full file or key screens only? *(L0–2: whole vs few screens)*
 7. What does "shipped live" mean (domain, staging first, analytics)?
 8. Accessibility bar (default WCAG 2.2 AA)?
 
-Deep probes when level ≥ 5 (after core 8, still one at a time):
+Deep probes when pack level entry lists them (level **5** only in v1; after core 8, still one at a time). Levels 3–4 use expert phrasing but **no** deep probe slots:
 
 9. Redirect strategy (legacy URL map / keep equity)?
 10. SEO equity notes (what rankings/content must survive cutover)?
