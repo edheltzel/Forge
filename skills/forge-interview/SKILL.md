@@ -1,6 +1,6 @@
 ---
 name: forge-interview
-description: Interview for an ICM workspace (website workbench BASE first, then gated folders). Software rails only on an explicit separate toggle. Use for /forge-interview.
+description: Interview for an ICM workspace. Capture answers, then generate ICM skeleton + gated folders from those answers (no SoT copytree). Software rails only on an explicit separate toggle. Use for /forge-interview.
 ---
 
 # Forge interview (ICM-first)
@@ -9,21 +9,22 @@ Grow Me style. One question at a time. Short. No forms.
 Do not implement the product. Do not build features after apply.
 Do not clone `fm279-forge-e2e` throwaway software rails as the ICM deliverable.
 
-**Captain folders are SoT.** This skill drives the interview and apply steps.
-Layout comes from workbench / `_core` — do not invent a parallel ontology inside this skill.
+**Interview alone must be enough** for the agent to understand requirements, create ICM structure, and scaffold project-type architecture.
+Captain SoT folders (workbench, ICM `_core`) remain **reference for the interviewing agent** (read during interview) — **never** dumped into the target.
+Do **not** copy `icm-website-workbench`, ICM-reuseable-template, or product workspaces into brown/greenfield projects.
 
-SoT paths (BigMac defaults):
-- Website BASE: `/Users/ed/Developer/ForgeTemplates/icm-website-workbench`
-- ICM conventions: `/Users/ed/Developer/AI/Standards/ICM/_core`
-- Optional software sibling sources: `templates/software/`, `templates/greenfield/`, `templates/brownfield/` under this Forge repo
+SoT paths (BigMac defaults — **read-only reference**, never apply targets):
+- Website shape reference: `/Users/ed/Developer/ForgeTemplates/icm-website-workbench`
+- ICM conventions reference: `/Users/ed/Developer/AI/Standards/ICM/_core`
 
-Deterministic apply (preferred for prove / non-interactive):  
+Deterministic generate (preferred for prove / non-interactive):  
 `python3 skills/forge-interview/apply_icm_base.py --help`
 
 HARD:
-- Always lay **ICM BASE** before any gated add.
-- Interview answers fill `setup/client.md` and gate folders — they do not replace BASE.
-- Software rails only if the user explicitly opts in on the **separate** software toggle. Sibling, never substitute for ICM.
+- Always **generate** a minimal **ICM BASE** from interview answers before any gated add.
+- **No template dump.** Never `shutil.copytree` / `copy2` (or equivalent tree dump) of `icm-website-workbench`, `ICM-reuseable-template`, `ICM/workspaces`, or any Captain product workspace into the target. Generate via mkdir + write markdown only. Captain SoT may be read as reference while coding/interviewing — never as an apply copy source.
+- Durable interview artifacts: `setup/client.md`, `setup/answers.json`, root `CONTEXT.md`, architecture notes as needed.
+- Software rails only if the user explicitly opts in on the **separate** software toggle. Sibling stubs generated from answers — never wholesale-copy greenfield/brownfield template trees.
 - Stop after apply. Humans edit markdown next.
 
 ---
@@ -35,15 +36,17 @@ Wait. Record target path. Still ICM BASE — not `apps/*` monorepo rails unless 
 
 ## 1. Product shape
 
-Ask: client **website** pipe (workbench stages 01–07), or **generic** ICM workflow (builder / `_core` blanks)?
+Ask: client **website** pipe (stages 01–07), or **generic** ICM workflow (listed stages only)?
 Wait.
 
-- Website → BASE = icm-website-workbench shape.
-- Generic → BASE = `_core` templates + only the stage folders they list later. Do not copy a product workspace wholesale (e.g. do not clone `script-to-animation`).
+- Website → generate website ICM spine (stages 01–07) from answers + inlined stubs.
+- Generic → generate `_config` / `setup` / `shared` + only the stage folders they list. Do not clone a product workspace.
+
+Optionally **read** captain SoT (workbench / `_core`) while interviewing for shape cues — do not copy those folders into the target.
 
 ## 2. Website intake (only if website)
 
-Ask one at a time (workbench `_config/intake-questions.md`):
+Ask one at a time (same questions as workbench intake reference):
 
 1. Brief, live rebuild, or both?
 2. Existing URL and who owns DNS / hosting today?
@@ -62,14 +65,14 @@ Ask one at a time:
 
 9. Brand vault needed? (yes → add `brand-vault/` outside `_config/`; no → brand notes only in `client.md`)
 10. Drop any default stages as a clear no-op? Prefer keep with thinner contract; delete folder only when answer is explicit no-op (ICM Remotion precedent).
-11. Bundle any domain `skills/<name>/`? (yes → name them; no → none). Workbench ships with no skills/.
+11. Bundle any domain `skills/<name>/`? (yes → name them; no → none).
 
 ## 4. Software rails toggle (separate)
 
-Ask: also apply Forge **software** rails (task runner / host / data / IdP templates + greenfield or brownfield AGENTS) as a **sibling** to ICM?
+Ask: also apply Forge **software** rails (task runner / host / data / IdP + greenfield or brownfield AGENTS stubs) as a **sibling** to ICM?
 
 - If **no**: skip. ICM only.
-- If **yes**: then ask one at a time — Turbo or Nx; host; data; IdP. No silent defaults. Apply under a sibling path (e.g. `forge-software/`) or brownfield overlay beside `src/` — never instead of ICM BASE.
+- If **yes**: then ask one at a time — Turbo or Nx; host; data; IdP. No silent defaults. **Generate** `forge-software/STACK.md` + AGENTS stubs from answers — do **not** copytree `templates/greenfield` / `templates/brownfield` / `templates/software` into the project.
 
 ## 5. Spec this run?
 
@@ -78,12 +81,12 @@ Optional. Wait.
 
 ## 6. Apply rails
 
-Run apply (script or equivalent manual steps). Order is mandatory:
+Run generate helper (or equivalent manual writes). Order is mandatory:
 
-1. **Materialize BASE** from SoT (website workbench tree, or `_core` + listed stages for generic).
-2. Write interview answers into `setup/client.md` (website) or intake brief (generic).
+1. **Generate BASE** as fresh files from interview content: numbered stages with CONTEXT stubs, `_config/` process stubs, `setup/`, `shared/`. Website vs generic layout comes from answers + small generators — **not** cloning Captain SoT folders.
+2. Persist answers into `setup/client.md` + `setup/answers.json` (website) or `setup/project-brief.md` + `setup/answers.json` (generic).
 3. **Gated adds only**: `brand-vault/`, `stages/02-scaffold/references/stack-astro.md` or `stack-next.md`, optional `shared/content-model.md`, optional `skills/`, keep/delete stage folders.
-4. Software sibling only if toggle yes.
+4. Software sibling stubs only if toggle yes (generated — no template tree dump).
 5. Stop. Do not build features. Do not treat `agent-workflows/` one-liners as the ICM deliverable.
 
 ## 7. Close
