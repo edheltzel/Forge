@@ -12,6 +12,7 @@ Captain machine: /Users/ed/.bun/bin/codegraph. Else codegraph on PATH.
 ## Forge contracts
 
 Interview first (`/forge-interview`). Grow Me, one question at a time.
+Atlas lock: website 0–5 experience gate selects pack + probe depth + vocab (session expert load; never dump pack into target).
 
 ICM-as-standard for the deliverable:
 - Always **generate** a minimal **ICM BASE** from interview answers (website stages 01–07 or generic listed stages). Do **not** copytree workbench / ICM-reuseable-template / product workspaces into the target.

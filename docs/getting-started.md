@@ -14,6 +14,7 @@ This tutorial takes about 10 minutes.
 A finished Forge interview close that:
 - Names greenfield ICM path or overlay-into-existing
 - Names website workbench pipe vs generic ICM
+- Names experience level 0–5 + pack (when website)
 - Names website intake picks (when website)
 - Names gates: brand vault, stages kept/dropped, skills
 - Names software toggle no (default for this tutorial) or yes + four stack picks
@@ -52,7 +53,11 @@ Read skills/forge-interview/SKILL.md and run it now.
 1. Reply with a new path, e.g. `~/Developer/demo-icm-site`.
 2. Reply **website** for the website ICM pipe (stages 01–07).
 
-You should then see website intake questions, one at a time.
+## Step 3b: Experience gate (0–5)
+
+Right after **website**, reply with an integer **0–5** only (0 = plain language / shallow; 5 = expert terms / deep probes). That picks the domain pack vocabulary and whether deep probes are asked. Skip this gate if you chose **generic**.
+
+You should then see website intake questions, one at a time (phrased for your level).
 
 ## Step 4: Answer website intake
 

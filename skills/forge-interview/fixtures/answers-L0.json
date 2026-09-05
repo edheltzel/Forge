@@ -1,0 +1,18 @@
+{
+  "a11y": "WCAG 2.2 AA",
+  "brand_vault": true,
+  "client_name": "Acme Plain",
+  "content": "markdown",
+  "dns_owner": "we own DNS",
+  "existing_url": "https://old.example.com",
+  "experience_level": 0,
+  "figma": "key-screens",
+  "host": "cloudflare",
+  "pack_id": "website",
+  "pack_version": "v1",
+  "shipped_live": "staging then production on our domain",
+  "skills": [],
+  "software_rails": false,
+  "stack": "astro",
+  "start_mode": "both"
+}

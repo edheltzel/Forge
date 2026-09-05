@@ -7,6 +7,9 @@ SoT (icm-website-workbench / ICM/_core) may inform the *shape* of this
 generator while coding — it is never a runtime copy source.
 
 Does not build product features. Software rails are opt-in sibling only.
+
+FM-325: persist experience_level + pack_id + pack_version from answers; optional
+setup/session-expert.md pointer (id/version/level only — never pack body dump).
 """
 from __future__ import annotations
 
@@ -436,27 +439,85 @@ def assert_not_banned_copy_source(path: Path | None) -> None:
 
 def render_client_md(answers: dict) -> str:
     a = answers
-    return "\n".join(
+    lines = [
+        "# Client (from forge-interview)",
+        "",
+        f"- Client name: {a.get('client_name', '')}",
+        f"- Start mode: {a.get('start_mode', '')}",
+        f"- Existing site URL (if any): {a.get('existing_url', '')}",
+        f"- Brief / goals (what \"live\" means for them): {a.get('shipped_live', '')}",
+        f"- Stack: {a.get('stack', '')}",
+        f"- Host: {a.get('host', '')}",
+        f"- Host notes (account, domain, DNS): {a.get('host_notes', a.get('dns_owner', ''))}",
+        f"- Content: {a.get('content', '')}",
+        f"- CMS name / API (if headless or keep-old): {a.get('cms', '')}",
+        f"- Figma: {a.get('figma', '')}",
+        f"- Brand notes (or link to a brand folder **outside** `_config/`): {a.get('brand_notes', '')}",
+        f"- Accessibility target: {a.get('a11y', 'WCAG 2.2 AA')}",
+    ]
+    # Optional deep probes (FM-325 L5+) — only when answered
+    for key, label in (
+        ("redirect_strategy", "Redirect strategy"),
+        ("seo_equity_notes", "SEO equity notes"),
+        ("cms_lockin_risk", "CMS lock-in risk"),
+        ("staging_hostname", "Staging hostname"),
+        ("analytics_owner", "Analytics owner"),
+    ):
+        if a.get(key) not in (None, ""):
+            lines.append(f"- {label}: {a.get(key)}")
+    if a.get("experience_level") is not None:
+        lines.append(f"- Experience level: {a.get('experience_level')}")
+    if a.get("pack_id") or a.get("pack_version"):
+        lines.append(
+            f"- Session pack: {a.get('pack_id', '')}@{a.get('pack_version', '')}"
+        )
+    lines.extend(
         [
-            "# Client (from forge-interview)",
-            "",
-            f"- Client name: {a.get('client_name', '')}",
-            f"- Start mode: {a.get('start_mode', '')}",
-            f"- Existing site URL (if any): {a.get('existing_url', '')}",
-            f"- Brief / goals (what \"live\" means for them): {a.get('shipped_live', '')}",
-            f"- Stack: {a.get('stack', '')}",
-            f"- Host: {a.get('host', '')}",
-            f"- Host notes (account, domain, DNS): {a.get('host_notes', a.get('dns_owner', ''))}",
-            f"- Content: {a.get('content', '')}",
-            f"- CMS name / API (if headless or keep-old): {a.get('cms', '')}",
-            f"- Figma: {a.get('figma', '')}",
-            f"- Brand notes (or link to a brand folder **outside** `_config/`): {a.get('brand_notes', '')}",
-            f"- Accessibility target: {a.get('a11y', 'WCAG 2.2 AA')}",
             "- Repo (empty until stage 02):",
             "- Production URL (empty until stage 07):",
             "",
         ]
     )
+    return "\n".join(lines)
+
+
+def normalize_pack_meta(answers: dict, product: str) -> dict:
+    """Ensure website answers carry pack pointer fields when experience_level set."""
+    out = dict(answers)
+    if product != "website":
+        return out
+    level = out.get("experience_level")
+    if level is None or level == "":
+        return out
+    try:
+        level_i = int(level)
+    except (TypeError, ValueError):
+        return out
+    if level_i < 0 or level_i > 5:
+        die(f"experience_level must be integer 0-5, got {level!r}")
+    out["experience_level"] = level_i
+    out.setdefault("pack_id", "website")
+    out.setdefault("pack_version", "v1")
+    return out
+
+
+def write_session_expert_pointer(target: Path, answers: dict) -> None:
+    """Optional setup/session-expert.md — id/version/level only (never pack body)."""
+    level = answers.get("experience_level")
+    pack_id = answers.get("pack_id")
+    pack_version = answers.get("pack_version")
+    if level is None or not pack_id:
+        return
+    body = (
+        "# Session expert (pointer)\n\n"
+        "Interview loaded a domain pack into the **session** as expert context.\n"
+        "This file is a pointer only — pack body is not dumped into the workspace.\n\n"
+        f"- pack_id: `{pack_id}`\n"
+        f"- pack_version: `{pack_version or ''}`\n"
+        f"- experience_level: `{level}`\n"
+        f"- pack_path: `skills/forge-interview/packs/{pack_id}/{pack_version or 'v1'}.yaml`\n"
+    )
+    write_text(target / "setup" / "session-expert.md", body)
 
 
 def make_stage_dir(stage_dir: Path, title: str, body: str) -> None:
@@ -695,6 +756,7 @@ def main() -> None:
     )
     args = p.parse_args()
     answers = load_answers(args.answers, args.answers_json)
+    answers = normalize_pack_meta(answers, args.product)
     target = Path(args.target).expanduser().resolve()
 
     # Refuse if caller tries to point banned trees at us as sources.
@@ -704,6 +766,7 @@ def main() -> None:
     if args.product == "website":
         generate_website_base(target, answers)
         write_text(target / "setup" / "client.md", render_client_md(answers))
+        write_session_expert_pointer(target, answers)
     else:
         stages = [s.strip() for s in args.generic_stages.split(",") if s.strip()]
         generate_generic_base(target, stages, answers)
@@ -715,6 +778,7 @@ def main() -> None:
         )
 
     # Durable machine-readable answers (alongside human client.md / brief).
+    # Includes experience_level / pack_id / pack_version when website gate ran.
     write_text(
         target / "setup" / "answers.json",
         json.dumps(answers, indent=2, sort_keys=True) + "\n",
@@ -736,6 +800,9 @@ def main() -> None:
                     "drop_stages",
                     "skills",
                     "software_rails",
+                    "experience_level",
+                    "pack_id",
+                    "pack_version",
                 )
             },
             sort_keys=True,

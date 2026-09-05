@@ -26,6 +26,7 @@ HARD:
 - Durable interview artifacts: `setup/client.md`, `setup/answers.json`, root `CONTEXT.md`, architecture notes as needed.
 - Software rails only if the user explicitly opts in on the **separate** software toggle. Sibling stubs generated from answers — never wholesale-copy greenfield/brownfield template trees.
 - Stop after apply. Humans edit markdown next.
+- **Experience gate (FM-325):** for website only, ask integer **0–5** immediately after product shape, before intake Q1. That level selects the versioned domain pack (vocab + probe depth). Load the pack as **session expert** (read into session). Never dump pack body into the target. Do not invent weight training or self-learning marketing.
 
 ---
 
@@ -39,33 +40,58 @@ Wait. Record target path. Still ICM BASE — not `apps/*` monorepo rails unless 
 Ask: client **website** pipe (stages 01–07), or **generic** ICM workflow (listed stages only)?
 Wait.
 
-- Website → generate website ICM spine (stages 01–07) from answers + inlined stubs.
-- Generic → generate `_config` / `setup` / `shared` + only the stage folders they list. Do not clone a product workspace.
+- Website → ask experience gate (next), then generate website ICM spine (stages 01–07) from answers + inlined stubs.
+- Generic → **skip** experience gate in v1. Generate `_config` / `setup` / `shared` + only the stage folders they list. Do not clone a product workspace.
 
 Optionally **read** captain SoT (workbench / `_core`) while interviewing for shape cues — do not copy those folders into the target.
 
+## 1b. Experience gate (website only)
+
+Ask immediately after product shape = website, **before** intake Q1:
+
+> How experienced are you with this kind of website build? Reply with an integer **0–5** only (0 = plain language / shallow; 5 = expert terms / deep probes).
+
+Wait. Accept integer 0–5 only. Re-ask if not in range.
+
+Then **load session expert** = read `skills/forge-interview/packs/website/v1.yaml` for that level into this session:
+- Record `experience_level`, `pack_id` (`website`), `pack_version` (`v1`) in answers.
+- Phrase subsequent questions with that level's vocabulary.
+- Ask **core_slots** at every level (same ICM slots).
+- At higher levels (esp. 5), also ask that level's **probes** (additive). L0 = core 8 only, no deep probes.
+- Do **not** write the pack YAML body into the target. Apply may write `setup/session-expert.md` as a pointer (id / version / level only).
+
 ## 2. Website intake (only if website)
 
-Ask one at a time (same questions as workbench intake reference):
+Ask one at a time. **Phrase by pack level** (plain at 0; expert terms at 5). Same ICM slots:
 
-1. Brief, live rebuild, or both?
-2. Existing URL and who owns DNS / hosting today?
+Core 8 (always):
+
+1. Brief, live rebuild, or both? *(L0: rebuild vs new)*
+2. Existing URL and who owns DNS / hosting today? *(L0: where the site lives)*
 3. Astro or Next for this client?
 4. Cloudflare / own VPS, or their host?
-5. Markdown collections, headless CMS, or keep the old CMS?
-6. Figma: full file or key screens only?
+5. Markdown collections, headless CMS, or keep the old CMS? *(L0: files vs CMS)*
+6. Figma: full file or key screens only? *(L0: whole vs few screens)*
 7. What does "shipped live" mean (domain, staging first, analytics)?
 8. Accessibility bar (default WCAG 2.2 AA)?
+
+Deep probes when level ≥ 5 (after core 8, still one at a time):
+
+9. Redirect strategy (legacy URL map / keep equity)?
+10. SEO equity notes (what rankings/content must survive cutover)?
+11. CMS lock-in risk (can we leave the old CMS; export path)?
+12. Staging hostname (who owns it; preview URL)?
+13. Analytics owner (who has GA/Tag Manager / what must fire on go-live)?
 
 No silent stack default for Astro vs Next.
 
 ## 3. Gated ICM adds
 
-Ask one at a time:
+Ask one at a time (numbering continues after intake / probes):
 
-9. Brand vault needed? (yes → add `brand-vault/` outside `_config/`; no → brand notes only in `client.md`)
-10. Drop any default stages as a clear no-op? Prefer keep with thinner contract; delete folder only when answer is explicit no-op (ICM Remotion precedent).
-11. Bundle any domain `skills/<name>/`? (yes → name them; no → none).
+- Brand vault needed? (yes → add `brand-vault/` outside `_config/`; no → brand notes only in `client.md`)
+- Drop any default stages as a clear no-op? Prefer keep with thinner contract; delete folder only when answer is explicit no-op (ICM Remotion precedent).
+- Bundle any domain `skills/<name>/`? (yes → name them; no → none).
 
 ## 4. Software rails toggle (separate)
 
@@ -84,12 +110,12 @@ Optional. Wait.
 Run generate helper (or equivalent manual writes). Order is mandatory:
 
 1. **Generate BASE** as fresh files from interview content: numbered stages with CONTEXT stubs, `_config/` process stubs, `setup/`, `shared/`. Website vs generic layout comes from answers + small generators — **not** cloning Captain SoT folders.
-2. Persist answers into `setup/client.md` + `setup/answers.json` (website) or `setup/project-brief.md` + `setup/answers.json` (generic).
+2. Persist answers into `setup/client.md` + `setup/answers.json` (website) or `setup/project-brief.md` + `setup/answers.json` (generic). Include `experience_level`, `pack_id`, `pack_version` when website gate ran. Optional `setup/session-expert.md` pointer only (never pack body).
 3. **Gated adds only**: `brand-vault/`, `stages/02-scaffold/references/stack-astro.md` or `stack-next.md`, optional `shared/content-model.md`, optional `skills/`, keep/delete stage folders.
 4. Software sibling stubs only if toggle yes (generated — no template tree dump).
 5. Stop. Do not build features. Do not treat `agent-workflows/` one-liners as the ICM deliverable.
 
 ## 7. Close
 
-Name: target path, mode, product shape, client intake picks (if website), gates (brand vault / stages kept|dropped / skills), software toggle (+ four picks if yes), spec yes/no.
+Name: target path, mode, product shape, experience level + pack (if website), client intake picks (if website), probes asked (if any), gates (brand vault / stages kept|dropped / skills), software toggle (+ four picks if yes), spec yes/no.
 Stop.

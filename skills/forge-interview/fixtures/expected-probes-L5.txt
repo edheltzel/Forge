@@ -1,0 +1,7 @@
+# Expected probes for experience_level 5 (expert / deep)
+# Core 8 PLUS these additive probes:
+redirect_strategy
+seo_equity_notes
+cms_lockin_risk
+staging_hostname
+analytics_owner

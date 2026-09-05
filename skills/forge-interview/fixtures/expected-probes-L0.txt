@@ -1,0 +1,3 @@
+# Expected probes for experience_level 0 (plain / shallow)
+# Core 8 ICM slots only — no deep probes.
+NONE
