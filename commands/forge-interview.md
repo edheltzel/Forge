@@ -1,5 +1,5 @@
 ---
-description: Run the Forge interview. Always asks what they are building and which stack they want.
+description: Run the Forge ICM interview. BASE from workbench first; gates from answers; software rails only on explicit toggle.
 ---
 
 Load skills/forge-interview/SKILL.md and run it now.

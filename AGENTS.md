@@ -11,15 +11,19 @@ Captain machine: /Users/ed/.bun/bin/codegraph. Else codegraph on PATH.
 
 ## Forge contracts
 
-Interview first. Always ask what they are building and which stack they want (Turbo vs Nx, host, data, IdP). No silent defaults.
+Interview first (`/forge-interview`). Grow Me, one question at a time.
 
-Greenfield after they pick: apps/web, apps/staff, apps/api plus packages/auth, packages/ui, packages/api-client. Native iOS at apps/ios, excluded from the JS workspace, Tuist inside that directory. No top-level services/ or tooling/.
+ICM-as-standard for the deliverable:
+- Always lay **ICM BASE** from captain SoT (`ForgeTemplates/icm-website-workbench` for website; `ICM/_core` blanks for generic).
+- Interview answers → `setup/client.md` + gated adds (brand-vault, stack ref stubs, optional skills, keep/delete stages).
+- Stop after apply. No feature build.
+- Captain folders are layout SoT. `skills/forge-interview` drives the interview; it is not the folder ontology.
 
-Brownfield: drop AGENTS.md, specs/, and agent-workflows/ beside existing src/. Do not restructure.
+Software rails (`templates/greenfield`, `templates/brownfield`, `templates/software`) only on an **explicit separate toggle**. Sibling under the target (e.g. `forge-software/`), never a substitute for ICM BASE. When that toggle is on: ask Turbo vs Nx, host, data, IdP — no silent defaults.
 
-ICM as sibling agent-workflows/ only (stages, review gates, artifacts out of src/). Not ICM-as-standard.
+Legacy `agent-workflows/` one-liners are not the ICM apply target.
 
-Skill v1: greenfield vs convert. Each run asks whether to write a spec. Software templates in templates/. Social/blog packs later.
+Each run may ask whether to write a short spec note. Social/blog packs later.
 
 ## Core Contract
 

@@ -1,32 +1,35 @@
 ---
 title: "Run your first Forge interview"
-description: "Learn Forge by completing one interview until it names your path, mode, stack, and spec choice"
+description: "Learn Forge by completing one ICM-first interview until it names path, gates, and optional software toggle"
 ---
 
 # Run Your First Forge Interview
 
-In this tutorial, we'll run Forge's interview once and stop when it names what we picked. By the end, we'll have a close that lists path, mode, four stack answers, and whether a spec will be written this run. We will not scaffold an app, and we will not let Forge pick a stack for us.
+In this tutorial, we'll run Forge's interview once and stop when it names what we picked. By the end, we'll have a close that lists target path, ICM product shape, website intake (if any), gated folders, and whether software rails were opted in. We will not build a client site, and we will not treat software monorepo rails as the ICM deliverable.
 
 This tutorial takes about 10 minutes.
 
 ## What you'll build
 
 A finished Forge interview close that:
-- Names greenfield or brownfield
-- Names what we are building (Forge is rails, not the product)
-- Names all four stack picks (task runner, host, data, identity provider (IdP: the service that signs people in))
+- Names greenfield ICM path or overlay-into-existing
+- Names website workbench pipe vs generic ICM
+- Names website intake picks (when website)
+- Names gates: brand vault, stages kept/dropped, skills
+- Names software toggle no (default for this tutorial) or yes + four stack picks
 - Names spec yes or no for this run
 
 ## Prerequisites
 
 - Cursor
 - The Forge repo at `~/Developer/forge`
+- Captain workbench SoT at `~/Developer/ForgeTemplates/icm-website-workbench`
 
 ## Step 1: Open Forge
 
 Open `~/Developer/forge` in Cursor.
 
-You should see the Forge repo, including `skills/forge-interview/SKILL.md`.
+You should see `skills/forge-interview/SKILL.md` and `skills/forge-interview/apply_icm_base.py`.
 
 ## Step 2: Start the interview
 
@@ -36,58 +39,65 @@ In chat, run:
 /forge-interview
 ```
 
-You should see the first question: new repo (greenfield) or convert/manage existing (brownfield)?
+You should see the first question: new ICM workspace path, or overlay into an existing repo?
 
-If the slash command is not wired, paste this instead (same interview, not a different product):
+If the slash command is not wired, paste this instead:
 
 ```
 Read skills/forge-interview/SKILL.md and run it now.
 ```
 
-You should then see that same first question.
+## Step 3: Answer mode + product
 
-If nothing asks greenfield vs brownfield, stop. Stay in `~/Developer/forge` and use the Read-skill line above. Do not invent a stack. Do not start building.
+1. Reply with a new path, e.g. `~/Developer/demo-icm-site`.
+2. Reply **website** for the workbench pipe.
 
-## Step 3: Answer mode
+You should then see website intake questions, one at a time.
 
-Reply with **new repo**.
+## Step 4: Answer website intake
 
-You should see a question about what we are building.
+Answer one at a time (example set):
 
-## Step 4: Answer what we are building
+1. Start mode: **both**
+2. URL / DNS: **none yet / we own DNS**
+3. Stack: **Astro**
+4. Host: **Cloudflare**
+5. Content: **markdown**
+6. Figma: **key screens**
+7. Shipped live: **staging then production on our domain**
+8. A11y: **WCAG 2.2 AA**
 
-Reply that we are putting rails under a sample app called `demo-rails`. Forge is the rails, not the product.
+## Step 5: Gates + software toggle
 
-You should see stack questions, one at a time: task runner, host, data, then identity provider (IdP).
+1. Brand vault: **yes**
+2. Drop stages: **none**
+3. Bundle skills: **no**
+4. Also apply Forge software rails: **no**
+5. Spec this run: **skip**
 
-## Step 5: Answer stack (all four)
+## Step 6: Apply (or watch the agent apply)
 
-Answer in this order, waiting between questions. Do not skip. Do not accept a silent default.
+The agent should lay ICM BASE from the workbench SoT, write `setup/client.md`, add `brand-vault/` and `stages/02-scaffold/references/stack-astro.md`, then stop.
 
-1. Task runner: **Turbo**
-2. Host: **Vercel**
-3. Data: **Supabase**
-4. Identity provider: **Better Auth**
+Non-interactive prove from the Forge repo:
 
-You should see a question: write a spec into `specs/` this run, or skip?
+```bash
+python3 skills/forge-interview/apply_icm_base.py \
+  --target /tmp/fm301-demo-icm \
+  --product website \
+  --answers-json '{"client_name":"Demo","start_mode":"both","stack":"astro","host":"cloudflare","content":"markdown","figma":"key-screens","shipped_live":"staging then prod","a11y":"WCAG 2.2 AA","brand_vault":true,"skills":[],"software_rails":false}'
+```
 
-If any of those four never got asked, stop. Return to Step 2 and run the interview again. Do not continue with a stack you did not name.
-
-## Step 6: Spec this run
-
-Reply **skip**.
-
-You should see a close that names path, mode (greenfield), the four stack picks above, and spec no.
-
-Stop there. Do not ask it to build features.
+You should see workbench-shaped folders under the target (`AGENTS.md`, `_config/`, `setup/client.md`, `stages/01-audit-ia` … `07-cd`, `brand-vault/`). You should **not** see `apps/web` monorepo rails unless software toggle was yes.
 
 ## What you've learned
 
 - Start Forge with `/forge-interview`
-- The interview always asks mode, what we're building, four stack picks, and spec yes/no
-- We name the stack. Forge does not.
+- ICM BASE comes first from captain workbench SoT
+- Answers fill `client.md` and gate folders
+- Software rails are a separate opt-in sibling
 
 ## Next steps
 
-- Run `/forge-interview` again for a brownfield overlay
-- How-to: apply rails after a close (not this tutorial)
+- Re-run with software toggle **yes** to add a `forge-software/` sibling
+- How-to: run stage 01 after humans edit `setup/client.md` (not this tutorial)

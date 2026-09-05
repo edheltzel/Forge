@@ -1,7 +1,7 @@
 # Forge
 
-Forge is the rails for software you keep in `~/Developer`. It is a framework, not the product you are building.
+Forge is the rails for agentic ICM workspaces you keep in `~/Developer`. It is a framework, not the product you are building.
 
-Use it when you want that same setup on a new repo or on an app you already have, and you want to pick the stack yourself.
+`/forge-interview` lays **ICM BASE** from captain SoT (`icm-website-workbench`), then gates folders from answers. Software monorepo templates are an optional sibling toggle — not the default deliverable.
 
 First run: [Getting started](docs/getting-started.md).
