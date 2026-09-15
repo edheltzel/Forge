@@ -525,12 +525,15 @@ def normalize_pack_meta(answers: dict, product: str) -> dict:
     level = out.get("experience_level")
     if level is None or level == "":
         return out
-    try:
+    if type(level) is int:
+        level_i = level
+    elif isinstance(level, str) and level.isdigit():
         level_i = int(level)
-    except (TypeError, ValueError):
+    else:
         die(f"experience_level must be integer 0-5, got {level!r}")
     if level_i < 0 or level_i > 5:
         die(f"experience_level must be integer 0-5, got {level!r}")
+
     out["experience_level"] = level_i  # persist raw; never alias 1→0 / 3→5
     out.setdefault("pack_id", "website")
     out.setdefault("pack_version", "v1")
