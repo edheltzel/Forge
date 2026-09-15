@@ -58,6 +58,41 @@ def run_apply(target: Path, answers: Path) -> str:
     return out
 
 
+def assert_apply_rejects(label: str, level: object) -> None:
+    target = Path(f"/tmp/fm325-reject-{label}")
+    if target.exists():
+        shutil.rmtree(target)
+    payload = {
+        "client_name": "X",
+        "stack": "astro",
+        "host": "cloudflare",
+        "experience_level": level,
+    }
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(APPLY),
+            "--target",
+            str(target),
+            "--product",
+            "website",
+            "--answers-json",
+            json.dumps(payload),
+        ],
+        cwd=str(ROOT),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    err = (proc.stdout or "") + (proc.stderr or "")
+    if proc.returncode == 0:
+        raise SystemExit(f"{label}: apply should reject experience_level={level!r}")
+    if "experience_level must be integer 0-5" not in err:
+        raise SystemExit(f"{label}: unexpected error: {err}")
+    print(f"reject {label} OK rc={proc.returncode}")
+
+
+
 def load_answers(target: Path) -> dict:
     return json.loads((target / "setup" / "answers.json").read_text(encoding="utf-8"))
 
@@ -180,10 +215,16 @@ def main() -> None:
     print("L5 probes:")
     for k in DEEP:
         print(f"  + {k}")
+    print("=== FM-325 prove: reject non-integer experience_level ===")
+    assert_apply_rejects("float-5.1", 5.1)
+    assert_apply_rejects("float-3.9", 3.9)
+    assert_apply_rejects("bool-true", True)
+    assert_apply_rejects("bool-false", False)
     print(
         "ASSERT OK: pack keys 0-5; ICM spine both; experience_level 0 vs 5; "
-        "L5 deeper fields; no workbench/pack dump"
+        "L5 deeper fields; no workbench/pack dump; non-int levels rejected"
     )
+
 
 
 if __name__ == "__main__":
