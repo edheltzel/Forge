@@ -1,4 +1,16 @@
+```
+███████╗ ██████╗ ██████╗  ██████╗ ███████╗
+██╔════╝██╔═══██╗██╔══██╗██╔════╝ ██╔════╝
+█████╗  ██║   ██║██████╔╝██║  ███╗█████╗
+██╔══╝  ██║   ██║██╔══██╗██║   ██║██╔══╝
+██║     ╚██████╔╝██║  ██║╚██████╔╝███████╗
+╚═╝      ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝
+```
+
 # Forge
+
+> [!NOTE]
+> EdHeltzel's ICM Rails
 
 Forge is the rails for agentic ICM workspaces you keep in `~/Developer`. It is a framework, not the product you are building.
 
