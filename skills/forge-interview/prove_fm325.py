@@ -92,9 +92,10 @@ def assert_apply_rejects(label: str, level: object) -> None:
     print(f"reject {label} OK rc={proc.returncode}")
 
 
-def apply_json(target: Path, payload: dict) -> None:
-    if target.exists():
+def apply_json(target: Path, payload: dict, *, wipe: bool = True) -> None:
+    if wipe and target.exists():
         shutil.rmtree(target)
+
     proc = subprocess.run(
         [
             sys.executable,
@@ -139,10 +140,22 @@ def prove_spec() -> None:
     if (skip / "docs" / "spec.md").is_file():
         raise SystemExit("greenfield without write_spec should omit spec")
     ov = Path("/tmp/fm325-spec-ov")
-    apply_json(ov, {**base, "mode": "overlay"})
+    if ov.exists():
+        shutil.rmtree(ov)
+    ov.mkdir(parents=True)
+    (ov / "AGENTS.md").write_text("KEEP-ME\n")
+    src = ov / "src" / "app.ts"
+    src.parent.mkdir(parents=True)
+    src.write_text("export {}\n")
+    apply_json(ov, {**base, "mode": "overlay"}, wipe=False)
     if not (ov / "docs" / "spec.md").is_file():
         raise SystemExit("overlay must write spec")
+    if (ov / "AGENTS.md").read_text(encoding="utf-8") != "KEEP-ME\n":
+        raise SystemExit("overlay clobbered AGENTS.md")
+    if src.read_text(encoding="utf-8") != "export {}\n":
+        raise SystemExit("overlay touched src/")
     print("spec write OK")
+
 
 
 
