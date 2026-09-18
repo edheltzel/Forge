@@ -24,7 +24,8 @@ Software rails only on an **explicit separate toggle**. Sibling stubs under the 
 
 Legacy `agent-workflows/` one-liners are not the ICM apply target.
 
-Each run may ask whether to write a short spec note. Social/blog packs later.
+Each run may synthesize a spec (`docs/spec.md` on the target, or Forge `specs/` if asked). Overlay/brownfield always writes that spec. Social/blog packs later.
+
 
 ## Core Contract
 
@@ -99,7 +100,8 @@ Default section order:
 
 ## User Preferences
 
-When the user requests a durable behavior change, record it here or in the relevant child AGENTS.md
+Track durable work as a GitHub issue. Mirror in-flight work with `npx -y tasks-axi`. Link the issue or PR on `tasks-axi done`. Close the GitHub issue when the task ships.
+
 
 ## Child DOX Index
 

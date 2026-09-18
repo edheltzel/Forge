@@ -560,6 +560,73 @@ def write_session_expert_pointer(target: Path, answers: dict) -> None:
     )
     write_text(target / "setup" / "session-expert.md", body)
 
+def _flag(val: object) -> bool:
+    if val is True:
+        return True
+    if isinstance(val, str):
+        return val.strip().lower() in {"1", "true", "yes", "y"}
+    return False
+
+
+def want_spec(answers: dict) -> bool:
+    mode = str(answers.get("mode") or "greenfield").strip().lower()
+    if mode in {"overlay", "brownfield"}:
+        return True
+    return _flag(answers.get("write_spec")) or _flag(answers.get("spec"))
+
+
+def spec_out_path(target: Path, answers: dict, forge_root: Path) -> Path:
+    dest = str(answers.get("spec_dest") or "target").strip().lower()
+    raw = str(answers.get("spec_slug") or answers.get("client_name") or target.name)
+    slug = "".join(ch if ch.isalnum() else "-" for ch in raw.lower()).strip("-") or "spec"
+    if dest == "forge":
+        return forge_root / "specs" / f"{slug}.md"
+    return target / "docs" / "spec.md"
+
+
+def write_spec(target: Path, answers: dict, product: str, forge_root: Path) -> Path | None:
+    if not want_spec(answers):
+        return None
+    path = spec_out_path(target, answers, forge_root)
+    title = str(answers.get("spec_title") or answers.get("client_name") or target.name)
+    mode = str(answers.get("mode") or "greenfield")
+    problem = str(
+        answers.get("spec_problem")
+        or answers.get("shipped_live")
+        or answers.get("goal")
+        or "(from interview)"
+    )
+    body = "\n".join(
+        [
+            f"# {title}",
+            "",
+            "## Problem",
+            problem,
+            "",
+            "## Solution",
+            f"ICM BASE generated at `{target}` ({product}, {mode}).",
+            "",
+            "## Scope",
+            f"- Product type: {product}",
+            f"- Mode: {mode}",
+            f"- Stack: {answers.get('stack') or ''}",
+            f"- Host: {answers.get('host') or ''}",
+            "",
+            "## Out of scope",
+            "- Feature build after apply",
+            "- Workbench or template copytree",
+            "",
+            "## Interview",
+            "```json",
+            json.dumps(answers, indent=2, sort_keys=True).rstrip(),
+            "```",
+            "",
+        ]
+    )
+    write_text(path, body)
+    return path
+
+
 
 def make_stage_dir(stage_dir: Path, title: str, body: str) -> None:
     (stage_dir / "references").mkdir(parents=True, exist_ok=True)
@@ -827,6 +894,9 @@ def main() -> None:
 
     apply_gates(target, answers)
     apply_software_sibling(target, answers)
+    spec_path = write_spec(
+        target, answers, args.product, Path(args.forge_root).expanduser().resolve()
+    )
 
     print(f"generated ICM BASE ({args.product}) → {target}")
     print(
@@ -844,12 +914,17 @@ def main() -> None:
                     "experience_level",
                     "pack_id",
                     "pack_version",
+                    "write_spec",
+                    "mode",
                 )
             },
             sort_keys=True,
         ),
     )
+    if spec_path is not None:
+        print(f"spec → {spec_path}")
     print("stop: no feature build; no template dump")
+
 
 
 if __name__ == "__main__":

@@ -18,7 +18,8 @@ A finished Forge interview close that:
 - Names website intake picks (when website)
 - Names gates: brand vault, stages kept/dropped, skills
 - Names software toggle no (default for this tutorial) or yes + four stack picks
-- Names spec yes or no for this run
+- Names spec path (`docs/spec.md`) or skip (overlay always writes the spec)
+
 
 ## Prerequisites
 

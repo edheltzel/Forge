@@ -92,6 +92,60 @@ def assert_apply_rejects(label: str, level: object) -> None:
     print(f"reject {label} OK rc={proc.returncode}")
 
 
+def apply_json(target: Path, payload: dict) -> None:
+    if target.exists():
+        shutil.rmtree(target)
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(APPLY),
+            "--target",
+            str(target),
+            "--product",
+            "website",
+            "--answers-json",
+            json.dumps(payload),
+        ],
+        cwd=str(ROOT),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    out = (proc.stdout or "") + (proc.stderr or "")
+    print(out, end="" if out.endswith("\n") else "\n")
+    if proc.returncode != 0:
+        raise SystemExit(f"apply failed rc={proc.returncode} {out}")
+
+
+def prove_spec() -> None:
+    base = {
+        "client_name": "SpecCo",
+        "stack": "astro",
+        "host": "cloudflare",
+        "experience_level": 0,
+        "shipped_live": "staging then prod",
+    }
+    gf = Path("/tmp/fm325-spec-gf")
+    apply_json(gf, {**base, "write_spec": True, "mode": "greenfield"})
+    spec = gf / "docs" / "spec.md"
+    if not spec.is_file():
+        raise SystemExit("greenfield write_spec missing docs/spec.md")
+    text = spec.read_text(encoding="utf-8")
+    for heading in ("## Problem", "## Solution", "## Scope", "## Out of scope", "## Interview"):
+        if heading not in text:
+            raise SystemExit(f"spec missing {heading}")
+    skip = Path("/tmp/fm325-spec-skip")
+    apply_json(skip, {**base, "mode": "greenfield"})
+    if (skip / "docs" / "spec.md").is_file():
+        raise SystemExit("greenfield without write_spec should omit spec")
+    ov = Path("/tmp/fm325-spec-ov")
+    apply_json(ov, {**base, "mode": "overlay"})
+    if not (ov / "docs" / "spec.md").is_file():
+        raise SystemExit("overlay must write spec")
+    print("spec write OK")
+
+
+
 
 def load_answers(target: Path) -> dict:
     return json.loads((target / "setup" / "answers.json").read_text(encoding="utf-8"))
@@ -220,10 +274,13 @@ def main() -> None:
     assert_apply_rejects("float-3.9", 3.9)
     assert_apply_rejects("bool-true", True)
     assert_apply_rejects("bool-false", False)
+    print("=== prove: to-spec write ===")
+    prove_spec()
     print(
         "ASSERT OK: pack keys 0-5; ICM spine both; experience_level 0 vs 5; "
-        "L5 deeper fields; no workbench/pack dump; non-int levels rejected"
+        "L5 deeper fields; no workbench/pack dump; non-int levels rejected; spec write"
     )
+
 
 
 
