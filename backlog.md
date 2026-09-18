@@ -1,9 +1,9 @@
 # Backlog
 
 ## In flight
-- [ ] issue-1 - Close issue 1: to-spec plus brownfield grill (kind: ship) (since 2026-09-18)
+- [ ] issue-1 - Close issue 1: to-spec plus brownfield grill (kind: ship) (since 2026-09-18) (hold: PR 3 is a Forge slice not the Matt plugin) (hold-kind: captain)
   https://github.com/edheltzel/Forge/issues/1 — generate spec from interview; overlay reads existing docs; keep Grow Me.
-- [ ] tracking - Wire tasks-axi plus GitHub issues into Forge workflow (kind: docs) (since 2026-09-18)
-  AGENTS.md: durable work = GitHub issue; in-flight = tasks-axi.
 ## Queued
 ## Done
+- [x] tracking - Wire tasks-axi plus GitHub issues into Forge workflow https://github.com/edheltzel/Forge/pull/3 (kind: docs) (merged 2026-09-18)
+  AGENTS.md: durable work = GitHub issue; in-flight = tasks-axi.
