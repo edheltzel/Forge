@@ -107,13 +107,20 @@ Ask: also apply Forge **software** rails (task runner / host / data / IdP + gree
 - If **no**: skip. ICM only.
 - If **yes**: then ask one at a time — Turbo or Nx; host; data; IdP. No silent defaults. **Generate** `forge-software/STACK.md` + AGENTS stubs from answers — do **not** copytree `templates/greenfield` / `templates/brownfield` / `templates/software` into the project.
 
-## 5. Spec this run? (to-spec)
+## 5. Spec this run? (continued interview, then to-spec)
 
-Do not start a new interview. Synthesize what was already answered.
-- Overlay / brownfield: always write the spec. Do not ask skip.
+Stay in Grow Me. One question at a time. Do not switch to grill frontier rounds.
+
+- Overlay / brownfield: do not ask skip. Spec is required. Synthesize from the docs you already read plus answers. No extra spec questions unless a gap remains.
 - Greenfield: ask write spec this run, or skip? Wait.
+  - Skip → `write_spec: false`. Go to apply.
+  - Yes → continue the interview (still one at a time):
+    1. What problem should the spec state? Wait. Record `spec_problem`.
+    2. What is out of scope for this run? Wait. Record `spec_out_of_scope`.
+    Then apply. That is greenfield + continued interview → spec.
 
-Write a spec with Problem, Solution, Scope, Out of scope, Interview. Default path: `<target>/docs/spec.md`. If they asked Forge `specs/`, set `spec_dest: forge` (slug from client name). Agent may open or update a GitHub issue from that file after apply. Apply itself does not call `gh`.
+Write Problem, Solution, Scope, Out of scope, Interview. Default path: `<target>/docs/spec.md`. If they asked Forge `specs/`, set `spec_dest: forge`. Agent may open a GitHub issue from that file after apply. Apply itself does not call `gh`.
+
 
 
 ## 6. Apply rails
@@ -124,13 +131,15 @@ Run generate helper (or equivalent manual writes). Order is mandatory:
 2. Persist answers into `setup/client.md` + `setup/answers.json` (website) or `setup/project-brief.md` + `setup/answers.json` (generic). Include `experience_level`, `pack_id`, `pack_version` when website gate ran. Optional `setup/session-expert.md` pointer only (never pack body).
 3. **Gated adds only**: `brand-vault/`, `stages/02-scaffold/references/stack-astro.md` or `stack-next.md`, optional `shared/content-model.md`, optional `skills/`, keep/delete stage folders.
 4. Software sibling stubs only if toggle yes (generated — no template tree dump).
-5. Spec: overlay always; greenfield when `write_spec`/`spec` is yes.
+5. Spec: overlay always; greenfield when `write_spec`/`spec` is yes after `spec_problem` and `spec_out_of_scope`.
+
 6. Stop. Do not build features. Do not treat `agent-workflows/` one-liners as the ICM deliverable.
 
 
 
 ## 7. Close
 
-Name: target path, mode (greenfield|overlay), project type, experience level + pack (if website), client intake picks (if website), probes asked (if any), gates (brand vault / stages kept|dropped / skills), software toggle (+ four picks if yes), spec path or skip.
+Name: target path, mode (greenfield|overlay), project type, experience level + pack (if website), client intake picks (if website), probes asked (if any), gates (brand vault / stages kept|dropped / skills), software toggle (+ four picks if yes), spec path or skip, spec_problem if asked.
+
 
 Stop.

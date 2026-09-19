@@ -127,7 +127,16 @@ def prove_spec() -> None:
         "shipped_live": "staging then prod",
     }
     gf = Path("/tmp/fm325-spec-gf")
-    apply_json(gf, {**base, "write_spec": True, "mode": "greenfield"})
+    apply_json(
+        gf,
+        {
+            **base,
+            "write_spec": True,
+            "mode": "greenfield",
+            "spec_problem": "Need a durable spec after intake",
+            "spec_out_of_scope": "No iOS app this run",
+        },
+    )
     spec = gf / "docs" / "spec.md"
     if not spec.is_file():
         raise SystemExit("greenfield write_spec missing docs/spec.md")
@@ -135,6 +144,11 @@ def prove_spec() -> None:
     for heading in ("## Problem", "## Solution", "## Scope", "## Out of scope", "## Interview"):
         if heading not in text:
             raise SystemExit(f"spec missing {heading}")
+    if "Need a durable spec after intake" not in text:
+        raise SystemExit("greenfield spec missing continued spec_problem")
+    if "No iOS app this run" not in text:
+        raise SystemExit("greenfield spec missing continued spec_out_of_scope")
+
     skip = Path("/tmp/fm325-spec-skip")
     apply_json(skip, {**base, "mode": "greenfield"})
     if (skip / "docs" / "spec.md").is_file():

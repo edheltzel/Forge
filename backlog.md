@@ -1,7 +1,7 @@
 # Backlog
 
 ## In flight
-- [ ] issue-1 - Close issue 1: to-spec plus brownfield grill (kind: ship) (since 2026-09-18) (hold: Red team vetoed close until grill-with-docs and continued-interview-to-spec exist) (hold-kind: captain)
+- [ ] issue-1 - Close issue 1: to-spec plus brownfield grill (kind: ship) (since 2026-09-18)
   https://github.com/edheltzel/Forge/issues/1 — generate spec from interview; overlay reads existing docs; keep Grow Me.
 ## Queued
 ## Done

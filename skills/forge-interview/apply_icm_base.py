@@ -604,6 +604,17 @@ def write_spec(target: Path, answers: dict, product: str, forge_root: Path) -> P
         or answers.get("goal")
         or "(from interview)"
     )
+    extra_oos = str(answers.get("spec_out_of_scope") or "").strip()
+    oos = [
+        "- Feature build after apply",
+        "- Workbench or template copytree",
+    ]
+    if extra_oos:
+        oos.append(f"- {extra_oos}")
+    solution = str(
+        answers.get("spec_solution")
+        or f"ICM BASE generated at `{target}` ({product}, {mode})."
+    )
     body = "\n".join(
         [
             f"# {title}",
@@ -612,7 +623,7 @@ def write_spec(target: Path, answers: dict, product: str, forge_root: Path) -> P
             problem,
             "",
             "## Solution",
-            f"ICM BASE generated at `{target}` ({product}, {mode}).",
+            solution,
             "",
             "## Scope",
             f"- Product type: {product}",
@@ -621,8 +632,7 @@ def write_spec(target: Path, answers: dict, product: str, forge_root: Path) -> P
             f"- Host: {answers.get('host') or ''}",
             "",
             "## Out of scope",
-            "- Feature build after apply",
-            "- Workbench or template copytree",
+            *oos,
             "",
             "## Interview",
             "```json",
@@ -633,6 +643,7 @@ def write_spec(target: Path, answers: dict, product: str, forge_root: Path) -> P
     )
     write_text(path, body)
     return path
+
 
 
 
