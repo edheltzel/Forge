@@ -144,6 +144,7 @@ def prove_spec() -> None:
         shutil.rmtree(ov)
     ov.mkdir(parents=True)
     (ov / "AGENTS.md").write_text("KEEP-ME\n")
+    (ov / "README.md").write_text("KEEP-README\n")
     src = ov / "src" / "app.ts"
     src.parent.mkdir(parents=True)
     src.write_text("export {}\n")
@@ -152,6 +153,8 @@ def prove_spec() -> None:
         raise SystemExit("overlay must write spec")
     if (ov / "AGENTS.md").read_text(encoding="utf-8") != "KEEP-ME\n":
         raise SystemExit("overlay clobbered AGENTS.md")
+    if (ov / "README.md").read_text(encoding="utf-8") != "KEEP-README\n":
+        raise SystemExit("overlay clobbered README.md")
     if src.read_text(encoding="utf-8") != "export {}\n":
         raise SystemExit("overlay touched src/")
     print("spec write OK")
