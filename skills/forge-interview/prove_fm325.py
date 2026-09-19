@@ -148,6 +148,29 @@ def prove_spec() -> None:
         raise SystemExit("greenfield spec missing continued spec_problem")
     if "No iOS app this run" not in text:
         raise SystemExit("greenfield spec missing continued spec_out_of_scope")
+    missing = Path("/tmp/fm325-spec-noproblem")
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(APPLY),
+            "--target",
+            str(missing),
+            "--product",
+            "website",
+            "--answers-json",
+            json.dumps({**base, "write_spec": True, "mode": "greenfield", "experience_level": 0}),
+        ],
+        cwd=str(ROOT),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    err = (proc.stdout or "") + (proc.stderr or "")
+    if proc.returncode == 0:
+        raise SystemExit("greenfield write_spec without spec_problem should fail")
+    if "spec_problem" not in err:
+        raise SystemExit(f"expected spec_problem error, got {err}")
+
 
     skip = Path("/tmp/fm325-spec-skip")
     apply_json(skip, {**base, "mode": "greenfield"})

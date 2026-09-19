@@ -598,12 +598,18 @@ def write_spec(target: Path, answers: dict, product: str, forge_root: Path) -> P
     path = spec_out_path(target, answers, forge_root)
     title = str(answers.get("spec_title") or answers.get("client_name") or target.name)
     mode = str(answers.get("mode") or "greenfield")
-    problem = str(
-        answers.get("spec_problem")
-        or answers.get("shipped_live")
-        or answers.get("goal")
-        or "(from interview)"
-    )
+    if is_overlay(answers):
+        problem = str(
+            answers.get("spec_problem")
+            or answers.get("shipped_live")
+            or answers.get("goal")
+            or "(from interview)"
+        )
+    else:
+        problem = str(answers.get("spec_problem") or "").strip()
+        if not problem:
+            die("greenfield spec requires spec_problem from continued interview")
+
     extra_oos = str(answers.get("spec_out_of_scope") or "").strip()
     oos = [
         "- Feature build after apply",
