@@ -1,3 +1,4 @@
 # specs
 
-Written only when the interview run said yes. Not source.
+Written when overlay/brownfield apply runs, or greenfield interview said yes with `spec_dest: forge`. Not source. Target default is `<workspace>/docs/spec.md`.
+

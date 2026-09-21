@@ -92,6 +92,113 @@ def assert_apply_rejects(label: str, level: object) -> None:
     print(f"reject {label} OK rc={proc.returncode}")
 
 
+def apply_json(target: Path, payload: dict, *, wipe: bool = True) -> None:
+    if wipe and target.exists():
+        shutil.rmtree(target)
+
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(APPLY),
+            "--target",
+            str(target),
+            "--product",
+            "website",
+            "--answers-json",
+            json.dumps(payload),
+        ],
+        cwd=str(ROOT),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    out = (proc.stdout or "") + (proc.stderr or "")
+    print(out, end="" if out.endswith("\n") else "\n")
+    if proc.returncode != 0:
+        raise SystemExit(f"apply failed rc={proc.returncode} {out}")
+
+
+def prove_spec() -> None:
+    base = {
+        "client_name": "SpecCo",
+        "stack": "astro",
+        "host": "cloudflare",
+        "experience_level": 0,
+        "shipped_live": "staging then prod",
+    }
+    gf = Path("/tmp/fm325-spec-gf")
+    apply_json(
+        gf,
+        {
+            **base,
+            "write_spec": True,
+            "mode": "greenfield",
+            "spec_problem": "Need a durable spec after intake",
+            "spec_out_of_scope": "No iOS app this run",
+        },
+    )
+    spec = gf / "docs" / "spec.md"
+    if not spec.is_file():
+        raise SystemExit("greenfield write_spec missing docs/spec.md")
+    text = spec.read_text(encoding="utf-8")
+    for heading in ("## Problem", "## Solution", "## Scope", "## Out of scope", "## Interview"):
+        if heading not in text:
+            raise SystemExit(f"spec missing {heading}")
+    if "Need a durable spec after intake" not in text:
+        raise SystemExit("greenfield spec missing continued spec_problem")
+    if "No iOS app this run" not in text:
+        raise SystemExit("greenfield spec missing continued spec_out_of_scope")
+    missing = Path("/tmp/fm325-spec-noproblem")
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(APPLY),
+            "--target",
+            str(missing),
+            "--product",
+            "website",
+            "--answers-json",
+            json.dumps({**base, "write_spec": True, "mode": "greenfield", "experience_level": 0}),
+        ],
+        cwd=str(ROOT),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    err = (proc.stdout or "") + (proc.stderr or "")
+    if proc.returncode == 0:
+        raise SystemExit("greenfield write_spec without spec_problem should fail")
+    if "spec_problem" not in err:
+        raise SystemExit(f"expected spec_problem error, got {err}")
+
+
+    skip = Path("/tmp/fm325-spec-skip")
+    apply_json(skip, {**base, "mode": "greenfield"})
+    if (skip / "docs" / "spec.md").is_file():
+        raise SystemExit("greenfield without write_spec should omit spec")
+    ov = Path("/tmp/fm325-spec-ov")
+    if ov.exists():
+        shutil.rmtree(ov)
+    ov.mkdir(parents=True)
+    (ov / "AGENTS.md").write_text("KEEP-ME\n")
+    (ov / "README.md").write_text("KEEP-README\n")
+    src = ov / "src" / "app.ts"
+    src.parent.mkdir(parents=True)
+    src.write_text("export {}\n")
+    apply_json(ov, {**base, "mode": "overlay"}, wipe=False)
+    if not (ov / "docs" / "spec.md").is_file():
+        raise SystemExit("overlay must write spec")
+    if (ov / "AGENTS.md").read_text(encoding="utf-8") != "KEEP-ME\n":
+        raise SystemExit("overlay clobbered AGENTS.md")
+    if (ov / "README.md").read_text(encoding="utf-8") != "KEEP-README\n":
+        raise SystemExit("overlay clobbered README.md")
+    if src.read_text(encoding="utf-8") != "export {}\n":
+        raise SystemExit("overlay touched src/")
+    print("spec write OK")
+
+
+
+
 
 def load_answers(target: Path) -> dict:
     return json.loads((target / "setup" / "answers.json").read_text(encoding="utf-8"))
@@ -220,10 +327,13 @@ def main() -> None:
     assert_apply_rejects("float-3.9", 3.9)
     assert_apply_rejects("bool-true", True)
     assert_apply_rejects("bool-false", False)
+    print("=== prove: to-spec write ===")
+    prove_spec()
     print(
         "ASSERT OK: pack keys 0-5; ICM spine both; experience_level 0 vs 5; "
-        "L5 deeper fields; no workbench/pack dump; non-int levels rejected"
+        "L5 deeper fields; no workbench/pack dump; non-int levels rejected; spec write"
     )
+
 
 
 

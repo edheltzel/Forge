@@ -16,6 +16,8 @@ Parent: `skills/AGENTS.md`. Apply helper: `apply_icm_base.py`.
 - HIL answers fill ICM; persist raw `experience_level`. Same core ICM slots at every level; only levels whose pack entry lists probes add them (v1: level 5 only).
 - No template dump / no copytree of workbench. Generate via mkdir + write.
 - Persist `experience_level`, `pack_id`, `pack_version` in `setup/answers.json`. Optional `setup/session-expert.md` pointer (id/version/level only).
+- Overlay reads existing docs (grill-with-docs); do not replace `src/`. Overlay always writes a spec. Greenfield spec only when `write_spec`/`spec` is yes.
+
 
 ## Work Guidance
 
@@ -26,6 +28,7 @@ Parent: `skills/AGENTS.md`. Apply helper: `apply_icm_base.py`.
 
 - `python3 skills/forge-interview/apply_icm_base.py --help`
 - `python3 skills/forge-interview/prove_fm325.py`
+
 
 ## Child DOX Index
 
