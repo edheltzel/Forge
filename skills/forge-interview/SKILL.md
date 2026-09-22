@@ -1,145 +1,126 @@
 ---
 name: forge-interview
-description: Interview for an ICM workspace. Capture answers, then generate ICM skeleton + gated folders from those answers (no SoT copytree). Software rails only on an explicit separate toggle. Use for /forge-interview.
+description: Adaptive ICM interview. Invent the next question from gaps until enough-to-structure, then generate a thin generic ICM skeleton from answers (no SoT copytree). Domain-agnostic. Use for /forge-interview.
 ---
 
 # Forge interview (ICM-first)
 
-Grow Me style. One question at a time. Short. No forms.
+Adaptive invent-and-branch (Pocock-style). One question at a time. Short. No forms.
+Domain-agnostic — software, branding, research, DIY, anything. Infer type; do not serve a type menu.
 Do not implement the product. Do not build features after apply.
-Do not clone `fm279-forge-e2e` throwaway software rails as the ICM deliverable.
 
-**Interview alone must be enough** for the agent to understand requirements, create ICM structure, and scaffold project-type architecture.
+**Sole product opinion:** outputs are structured as ICM. The interview exists to learn enough to lay that binder. No other product opinions. No always-recommend.
+
 Captain SoT folders (workbench, ICM `_core`) remain **reference for the interviewing agent** (read during interview) — **never** dumped into the target.
-Do **not** copy `icm-website-workbench`, ICM-reuseable-template, or product workspaces into brown/greenfield projects.
 
 SoT paths (BigMac defaults — **read-only reference**, never apply targets):
 - Website shape reference: `/Users/ed/Developer/ForgeTemplates/icm-website-workbench`
 - ICM conventions reference: `/Users/ed/Developer/AI/Standards/ICM/_core`
 
-Deterministic generate (preferred for prove / non-interactive):  
-`python3 skills/forge-interview/apply_icm_base.py --help`
+Machine gate (preferred after each turn / before apply):
+
+```
+python3 skills/forge-interview/grill.py --help
+python3 skills/forge-interview/grill.py --slots-json '{"what":"…","who":"…","done":"…","constraints":"…"}' --check
+```
+
+Deterministic generate (only after gap pass ∧ ready yes):
+
+```
+python3 skills/forge-interview/apply_icm_base.py --product generic --help
+```
 
 HARD:
-- Always **generate** a minimal **ICM BASE** from interview answers before any gated add.
-- **No template dump.** Never `shutil.copytree` / `copy2` (or equivalent tree dump) of `icm-website-workbench`, `ICM-reuseable-template`, `ICM/workspaces`, or any Captain product workspace into the target. Generate via mkdir + write markdown only. Captain SoT may be read as reference while coding/interviewing — never as an apply copy source.
-- Durable interview artifacts: `setup/client.md`, `setup/answers.json`, root `CONTEXT.md`, architecture notes as needed.
-- Software rails only if the user explicitly opts in on the **separate** software toggle. Sibling stubs generated from answers — never wholesale-copy greenfield/brownfield template trees.
+- **Invent-and-branch.** Forge invents the next question from remaining gaps. There is **no** fixed Q1–Q5 / core-8 product spine.
+- **Enough-to-structure** (machine): after trim, **what**, **who**, **done**, **constraints** are all non-empty. That is the only day-one floor. Typed pack floors are a hook for later — **none ship in this interview**.
+- **Ready-yes alone must not lay the binder.** If they say ready with empty slots: refuse, name the empty slots in plain words, invent the next question for the first empty slot.
+- **Offer the ready gate only after the gap check passes.** Exact ask: Are you ready for us to structure this project, or is there anything else you want to add?
+- **Grill bound:** max **12** invent rounds after the opener. Past the cap, only chase empty enough-slots (no new soft gaps). Cap does **not** waive the gap check.
+- **Suggestions only when the human asks.** Ground in industry standards / best practices. Never force a stack or host. Never always-recommend.
+- Always **generate** a thin **generic ICM BASE** from interview answers after gap pass ∧ ready yes. **No template dump.** Never `shutil.copytree` / `copy2` of workbench, `ICM-reuseable-template`, or product workspaces into the target.
+- Durable artifacts: `setup/project-brief.md`, `setup/answers.json`, root `CONTEXT.md`.
+- Software four-pack (Turbo/Nx/host/data/identity) is **not** this interview. Dead end for the product story. Optional later pack branch only if they explicitly ask later — never a required ask.
 - Stop after apply. Humans edit markdown next.
-- **Experience gate (FM-325):** for website only, ask integer **0–5** immediately after product shape, before intake Q1. Load `packs/website/v1.yaml` **levels["N"]** for that integer (all of 0–5 are explicit — do not clamp mid levels). Vocab/depth/probes come from that entry; persist raw `experience_level`. Never dump pack body into the target. Do not invent weight training or self-learning marketing.
+
+Out of workflow as required asks: timeline/deadline (only if they volunteer); forced stack/host quizzes; always-on recommendations; a separate “anything else?” catch-all (folded into the ready gate); website vs generic type menu; 0–5 experience gate as a required first-day ask.
 
 ---
 
-## 0. Path / mode
+## 0. Open
 
-Ask: new ICM workspace at a path (greenfield ICM), or overlay ICM into an existing repo?
-Wait. Record target path. Still ICM BASE — not `apps/*` monorepo rails unless software toggle later.
-Record `mode`: `greenfield` or `overlay`. Overlay is brownfield → ICM.
-If overlay: read the target's existing `AGENTS.md`, `README.md`, and `docs/` first (grill-with-docs). Do not re-ask facts those files already state. Ask only gaps. Do not replace `src/` or the live app tree.
+Ask the opener (not a project-type menu):
 
+> What are you trying to make or figure out?
 
-## 1. Project type
+Wait. Store the answer in **what**. Infer project type privately. Do not make them pick from a list.
 
-Ask: client **website** pipe (stages 01–07), or **generic** ICM workflow (listed stages only)?
-Wait. This is the project type. Record as `product` (`website` | `generic`).
+If overlaying into an existing repo is already obvious from context, read `AGENTS.md`, `README.md`, and `docs/` (grill-with-docs) and do not re-ask facts those files already state. Target path is apply logistics — ask it only after ready yes, not as the opener.
 
+## 1. Invent-and-branch
 
-- Website → ask experience gate (next), then generate website ICM spine (stages 01–07) from answers + inlined stubs.
-- Generic → **skip** experience gate in v1. Generate `_config` / `setup` / `shared` + only the stage folders they list. Do not clone a product workspace.
+Keep a slot map: `what`, `who`, `done`, `constraints` (plus free-form notes). Shown to the human only as plain follow-ups — never as a labeled five-question spine.
 
-Optionally **read** captain SoT (workbench / `_core`) while interviewing for shape cues — do not copy those folders into the target.
+| Slot | Pass when | Plain meaning |
+|------|-----------|----------------|
+| **what** | non-empty after trim | What they’re trying to make or figure out |
+| **who** | non-empty after trim | Who it’s for (self, client, team, …) |
+| **done** | non-empty after trim | Finish line — what must be true / in hand |
+| **constraints** | non-empty after trim | Must-have and/or must-avoid (`none known yet` counts if they said so) |
 
-## 1b. Experience gate (website only)
+Each turn:
 
-Ask immediately after product shape = website, **before** intake Q1:
+1. Map their words into slots. Their words stay on the page; you structure behind the scenes.
+2. Run the gap check (`grill.py --check` or the same rules).
+3. If any slot is empty: invent **one** question aimed at the **first** empty slot (or a clarifying follow-up on a thin slot). Wait.
+4. Count that invented question as one invent round. Opener does not count. Ready-gate ask does not count.
+5. Do not bombard. Do not ask Turbo/Nx/host/data/IdP. Do not ask a type menu.
 
-> How experienced are you with this kind of website build? Reply with an integer **0–5** only (0 = plain language / shallow; 5 = expert terms / deep probes).
+If they **ask for suggestions**: pause invent, cite industry standards / best practices for the current empty slot, do not dictate a pick, then continue the grill. If they did not ask, do not suggest.
 
-Wait. Accept integer 0–5 only. Re-ask if not in range. **Do not clamp** mid levels to 0 or 5.
+Experience 0–5 / website pack: **not loaded day one**. When a typed pack exists later for the inferred type, scale probe depth and vocabulary from that pack and satisfy its floor before ready. Until then, only the four-slot floor applies. Never dump a pack body into the target.
 
-Then **load session expert** = read `skills/forge-interview/packs/website/v1.yaml` **levels["N"]** for the chosen integer N into this session (every of 0–5 is explicit in the pack):
-- Record raw `experience_level` (the HIL integer), `pack_id` (`website`), `pack_version` (`v1`) in answers — do **not** rewrite 1→0 or 3→5.
-- Phrase subsequent questions with that level entry's `vocabulary` / `phrase_hints`.
-- Ask **core_slots** at every level (same ICM slots).
-- Ask that level's **probes** only (additive when non-empty). Pack map:
-  - **0–2**: plain vocab, shallow, `probes: []` (core 8 only)
-  - **3–4**: expert vocab / deep phrasing, still `probes: []` (no L5 deep probe slots)
-  - **5**: expert vocab / deep + full L5 probes list
-- Do **not** write the pack YAML body into the target. Apply may write `setup/session-expert.md` as a pointer (id / version / level only).
+## 2. Grill bounds
 
-## 2. Website intake (only if website)
+- **Generic floor:** the four slots above. Until they pass, every invented question targets the first empty slot.
+- **Pack floor:** hook only. Day one has no typed packs in this interview.
+- **Round cap:** max **12** invent rounds after the opener. At the cap, if the gap check still fails: summarize what’s filled, name what’s still empty in plain words, and keep grilling **only** the empty slots (or ask whether they want to add the missing piece / mark constraints as `none known yet`). Do **not** invent soft new gaps. Cap hit does not waive the gap check and does not offer ready.
 
-Ask one at a time. **Phrase by pack level entry** (plain at 0–2; expert terms at 3–5). Same ICM slots:
+## 3. Ready gate (only after gap check passes)
 
-Core 8 (always):
+When all four slots are non-empty, ask **exactly**:
 
-1. Brief, live rebuild, or both? *(L0–2: rebuild vs new)*
-2. Existing URL and who owns DNS / hosting today? *(L0–2: where the site lives)*
-3. Astro or Next for this client?
-4. Cloudflare / own VPS, or their host?
-5. Markdown collections, headless CMS, or keep the old CMS? *(L0–2: files vs CMS)*
-6. Figma: full file or key screens only? *(L0–2: whole vs few screens)*
-7. What does "shipped live" mean (domain, staging first, analytics)?
-8. Accessibility bar (default WCAG 2.2 AA)?
+> Are you ready for us to structure this project, or is there anything else you want to add?
 
-Deep probes when pack level entry lists them (level **5** only in v1; after core 8, still one at a time). Levels 3–4 use expert phrasing but **no** deep probe slots:
+- If they add more: take the note, re-run the gap check, then ask the ready gate again until they say ready.
+- If they say ready while any required slot is empty: **refuse structure**. Name the empty slots in plain words. Invent the next question for the first empty one. Do not call apply.
+- If they say ready and the gap check passes: interview done. Go to apply.
 
-9. Redirect strategy (legacy URL map / keep equity)?
-10. SEO equity notes (what rankings/content must survive cutover)?
-11. CMS lock-in risk (can we leave the old CMS; export path)?
-12. Staging hostname (who owns it; preview URL)?
-13. Analytics owner (who has GA/Tag Manager / what must fire on go-live)?
+Interview done = gap check pass ∧ ready yes.
 
-No silent stack default for Astro vs Next.
+## 4. Apply rails
 
-## 3. Gated ICM adds
+Ask target path if you do not already have it (greenfield path vs overlay into an existing repo). Overlay: do not replace `src/` or the live app tree; overlay always writes a spec. Greenfield spec only if they asked for one.
 
-Ask one at a time (numbering continues after intake / probes):
+Then run generate. Order is mandatory:
 
-- Brand vault needed? (yes → add `brand-vault/` outside `_config/`; no → brand notes only in `client.md`)
-- Drop any default stages as a clear no-op? Prefer keep with thinner contract; delete folder only when answer is explicit no-op (ICM Remotion precedent).
-- Bundle any domain `skills/<name>/`? (yes → name them; no → none).
-
-## 4. Software rails toggle (separate)
-
-Ask: also apply Forge **software** rails (task runner / host / data / IdP + greenfield or brownfield AGENTS stubs) as a **sibling** to ICM?
-
-- If **no**: skip. ICM only.
-- If **yes**: then ask one at a time — Turbo or Nx; host; data; IdP. No silent defaults. **Generate** `forge-software/STACK.md` + AGENTS stubs from answers — do **not** copytree `templates/greenfield` / `templates/brownfield` / `templates/software` into the project.
-
-## 5. Spec this run? (continued interview, then to-spec)
-
-Stay in Grow Me. One question at a time. Do not switch to grill frontier rounds.
-
-- Overlay / brownfield: do not ask skip. Spec is required. Synthesize from the docs you already read plus answers. No extra spec questions unless a gap remains.
-- Greenfield: ask write spec this run, or skip? Wait.
-  - Skip → `write_spec: false`. Go to apply.
-  - Yes → continue the interview (still one at a time):
-    1. What problem should the spec state? Wait. Record `spec_problem`.
-    2. What is out of scope for this run? Wait. Record `spec_out_of_scope`.
-    Then apply. That is greenfield + continued interview → spec.
-
-Write Problem, Solution, Scope, Out of scope, Interview. Default path: `<target>/docs/spec.md`. If they asked Forge `specs/`, set `spec_dest: forge`. Agent may open a GitHub issue from that file after apply. Apply itself does not call `gh`.
-
-
-
-## 6. Apply rails
-
-Run generate helper (or equivalent manual writes). Order is mandatory:
-
-1. **Generate BASE** as fresh files from interview content: numbered stages with CONTEXT stubs, `_config/` process stubs, `setup/`, `shared/`. Website vs generic layout comes from answers + small generators — **not** cloning Captain SoT folders.
-2. Persist answers into `setup/client.md` + `setup/answers.json` (website) or `setup/project-brief.md` + `setup/answers.json` (generic). Include `experience_level`, `pack_id`, `pack_version` when website gate ran. Optional `setup/session-expert.md` pointer only (never pack body).
-3. **Gated adds only**: `brand-vault/`, `stages/02-scaffold/references/stack-astro.md` or `stack-next.md`, optional `shared/content-model.md`, optional `skills/`, keep/delete stage folders.
-4. Software sibling stubs only if toggle yes (generated — no template tree dump).
-5. Spec: overlay always; greenfield when `write_spec`/`spec` is yes after `spec_problem` and `spec_out_of_scope`.
-
+1. Confirm `grill.py --check` reports enough-to-structure (all four slots + ready). If not, refuse and return to invent.
+2. **Generate BASE** as fresh files from interview content: numbered stages with CONTEXT stubs, `_config/`, `setup/`, `shared/`. Thin generic skeleton — **not** cloning Captain SoT folders, **not** the website 01–07 pipe unless a later typed pack says so.
+3. Persist `setup/project-brief.md` + `setup/answers.json` with what / who / done / constraints / notes / `ready: true`.
+4. Software sibling stubs **only** if they explicitly asked for software rails later (generated — no template tree dump). Do not prompt for Turbo/Nx as part of this apply.
+5. Spec: overlay always (problem may be `what`); greenfield when they asked.
 6. Stop. Do not build features. Do not treat `agent-workflows/` one-liners as the ICM deliverable.
 
+```
+python3 skills/forge-interview/apply_icm_base.py \
+  --target <path> \
+  --product generic \
+  --answers-json '<slots + ready true>'
+```
 
+Generic apply **refuses** if any enough-slot is empty or ready is not yes.
 
-## 7. Close
+## 5. Close
 
-Name: target path, mode (greenfield|overlay), project type, experience level + pack (if website), client intake picks (if website), probes asked (if any), gates (brand vault / stages kept|dropped / skills), software toggle (+ four picks if yes), spec path or skip, spec_problem if asked.
-
+Name: target path, inferred type (your inference, not a menu pick), the four slots in their words, invent-round count, ready yes, spec path or skip.
 
 Stop.

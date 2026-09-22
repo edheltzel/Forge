@@ -11,16 +11,18 @@ Captain machine: /Users/ed/.bun/bin/codegraph. Else codegraph on PATH.
 
 ## Forge contracts
 
-Interview first (`/forge-interview`). Grow Me, one question at a time.
-Atlas lock: website 0–5 experience gate selects pack + probe depth + vocab (session expert load; never dump pack into target).
+Interview first (`/forge-interview`). Adaptive invent-and-branch, one question at a time. Domain-agnostic.
+Enough-to-structure: **what**, **who**, **done**, **constraints** (all non-empty after trim). Ready-yes alone does not lay the binder. Offer ready only after the gap check passes. Max **12** invent rounds after the opener; cap does not waive the gap check.
+
+Typed packs (website 0–5 experience gate, probe depth, vocab) are a **later hook** — not the day-one interview spine. When a pack exists, load it as session expert; never dump pack body into the target.
 
 ICM-as-standard for the deliverable:
-- Always **generate** a minimal **ICM BASE** from interview answers (website stages 01–07 or generic listed stages). Do **not** copytree workbench / ICM-reuseable-template / product workspaces into the target.
-- Interview answers → durable artifacts (`setup/client.md`, `setup/answers.json`, `CONTEXT.md`) + gated adds (brand-vault, stack ref stubs, optional skills, keep/delete stages).
+- Always **generate** a minimal **ICM BASE** from interview answers (thin generic skeleton day one; website stages 01–07 only when a later typed pack applies). Do **not** copytree workbench / ICM-reuseable-template / product workspaces into the target.
+- Interview answers → durable artifacts (`setup/project-brief.md`, `setup/answers.json`, root `CONTEXT.md`). Website gated adds (brand-vault, stack refs) are later pack, not the day-one grill.
 - Stop after apply. No feature build.
-- Captain SoT folders are **read-only reference** for the interviewing agent. `skills/forge-interview` + `apply_icm_base.py` generate the target; they do not dump SoT trees.
+- Captain SoT folders are **read-only reference** for the interviewing agent. `skills/forge-interview` (`grill.py` + `apply_icm_base.py`) generate the target; they do not dump SoT trees.
 
-Software rails only on an **explicit separate toggle**. Sibling stubs under the target (e.g. `forge-software/STACK.md`), never a substitute for ICM BASE and never a wholesale greenfield/brownfield template copy. When that toggle is on: ask Turbo vs Nx, host, data, IdP — no silent defaults.
+Software rails only on an **explicit separate toggle** (optional later pack branch — not the core interview). Sibling stubs under the target (e.g. `forge-software/STACK.md`), never a substitute for ICM BASE and never a wholesale greenfield/brownfield template copy. Do not ask Turbo vs Nx / host / data / IdP as required interview questions.
 
 Legacy `agent-workflows/` one-liners are not the ICM apply target.
 
