@@ -1,11 +1,12 @@
 # templates
 
-Software rails snippets here are **reference** for interview questions only.
+Software rails snippets here are **reference** for an optional later pack branch only — not the `/forge-interview` spine.
 
-When `/forge-interview` gets an explicit software toggle, the apply helper **generates**
+When someone **explicitly asks** for software rails, the apply helper **generates**
 `forge-software/` stubs from answers — it does **not** copytree these folders into the project.
+Do not quiz Turbo/Nx/host/data/IdP as required interview questions.
 
-ICM website BASE is also **generated** from interview answers (not copied from
+ICM BASE is **generated** from interview answers (thin generic skeleton day one; not copied from
 `ForgeTemplates/icm-website-workbench`).
 
 ## Child DOX Index

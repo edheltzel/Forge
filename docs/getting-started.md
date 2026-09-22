@@ -1,25 +1,22 @@
 ---
 title: "Run your first Forge interview"
-description: "Learn Forge by completing one ICM-first interview until it names path, gates, and optional software toggle"
+description: "Learn Forge by completing one adaptive ICM interview until enough-to-structure, then laying a thin generic binder"
 ---
 
 # Run Your First Forge Interview
 
-In this tutorial, we'll run Forge's interview once and stop when it names what we picked. By the end, we'll have a close that lists target path, ICM product shape, website intake (if any), gated folders, and whether software rails were opted in. We will not build a client site, and we will not treat software monorepo rails as the ICM deliverable.
+In this tutorial, we'll run Forge's interview until the enough-to-structure gate passes and we say ready. By the end, we'll have a close that names the four slots in our words and a generated generic ICM skeleton. We will not pick a project-type menu, we will not answer a Turbo/Nx quiz, and we will not treat software monorepo rails as the ICM deliverable.
 
 This tutorial takes about 10 minutes.
 
 ## What you'll build
 
 A finished Forge interview close that:
-- Names greenfield ICM path or overlay-into-existing
-- Names website workbench pipe vs generic ICM
-- Names experience level 0–5 + pack (when website)
-- Names website intake picks (when website)
-- Names gates: brand vault, stages kept/dropped, skills
-- Names software toggle no (default for this tutorial) or yes + four stack picks
-- Names spec path (`docs/spec.md`) or skip (overlay always writes the spec)
-
+- Started from "what are you trying to make or figure out?" (not a type menu)
+- Filled **what**, **who**, **done**, **constraints** in your words
+- Got the ready gate only after those four were non-empty
+- Generated a thin generic ICM BASE at a path you chose
+- Did **not** run a fixed Q1–Q5 / website core-8 spine
 
 ## Prerequisites
 
@@ -31,7 +28,7 @@ A finished Forge interview close that:
 
 Open `~/Developer/forge` in Cursor.
 
-You should see `skills/forge-interview/SKILL.md` and `skills/forge-interview/apply_icm_base.py`.
+You should see `skills/forge-interview/SKILL.md` and `skills/forge-interview/grill.py`.
 
 ## Step 2: Start the interview
 
@@ -41,7 +38,7 @@ In chat, run:
 /forge-interview
 ```
 
-You should see the first question: new ICM workspace path, or overlay into an existing repo?
+You should see the opener: what are you trying to make or figure out?
 
 If the slash command is not wired, paste this instead:
 
@@ -49,61 +46,54 @@ If the slash command is not wired, paste this instead:
 Read skills/forge-interview/SKILL.md and run it now.
 ```
 
-## Step 3: Answer mode + product
+## Step 3: Answer in your words
 
-1. Reply with a new path, e.g. `~/Developer/demo-icm-site`.
-2. Reply **website** for the website ICM pipe (stages 01–07).
+Reply with a real project — software, branding, research, or DIY. Example (kitchen remodel):
 
-## Step 3b: Experience gate (0–5)
+1. What: **A contractor packet for the back-of-house kitchen remodel**
+2. Who: **Our household**
+3. Done: **Signed packet and a room that passes inspection**
+4. Constraints: **Keep the existing plumbing wall**
 
-Right after **website**, reply with an integer **0–5** only (0 = plain language / shallow; 5 = expert terms / deep probes). That loads the matching pack level entry: **0–2** plain/shallow (no deep probes), **3–4** expert phrasing still without deep probes, **5** expert + deep probes. Mid levels are not clamped to 0 or 5. Skip this gate if you chose **generic**.
+Forge invents the next question from whatever is still empty. One at a time. If you get stuck, *ask* for suggestions — it will cite industry practice, not dictate a stack.
 
-You should then see website intake questions, one at a time (phrased for your level).
+You should **not** see a website-vs-generic menu, an Astro-vs-Next quiz, or Turbo/Nx as required asks.
 
-## Step 4: Answer website intake
+## Step 4: Ready gate
 
-Answer one at a time (example set):
+When the four slots are filled, Forge asks:
 
-1. Start mode: **both**
-2. URL / DNS: **none yet / we own DNS**
-3. Stack: **Astro**
-4. Host: **Cloudflare**
-5. Content: **markdown**
-6. Figma: **key screens**
-7. Shipped live: **staging then production on our domain**
-8. A11y: **WCAG 2.2 AA**
+> Are you ready for us to structure this project, or is there anything else you want to add?
 
-## Step 5: Gates + software toggle
+Add a note if you want, then say ready. If you say ready while a slot is empty, Forge refuses, names the empty slots in plain words, and keeps grilling.
 
-1. Brand vault: **yes**
-2. Drop stages: **none**
-3. Bundle skills: **no**
-4. Also apply Forge software rails: **no**
-5. Spec this run: **skip**
+## Step 5: Apply (or watch the agent apply)
 
-## Step 6: Apply (or watch the agent apply)
-
-The agent should **generate** ICM BASE from interview answers, write `setup/client.md` (+ `setup/answers.json`), add `brand-vault/` and `stages/02-scaffold/references/stack-astro.md`, then stop. No workbench copytree.
+Name a target path when asked. The agent should **generate** a thin generic ICM BASE from the four slots, write `setup/project-brief.md` + `setup/answers.json`, then stop. No workbench copytree.
 
 Non-interactive prove from the Forge repo:
 
 ```bash
+python3 skills/forge-interview/prove_fm606.py
+
 python3 skills/forge-interview/apply_icm_base.py \
-  --target /tmp/fm304-demo-icm \
-  --product website \
-  --answers-json '{"client_name":"Demo","start_mode":"both","stack":"astro","host":"cloudflare","content":"markdown","figma":"key-screens","shipped_live":"staging then prod","a11y":"WCAG 2.2 AA","brand_vault":true,"skills":[],"software_rails":false}'
+  --target /tmp/fm606-demo-icm \
+  --product generic \
+  --answers-json '{"what":"Kitchen remodel packet","who":"Our household","done":"Signed packet + inspection","constraints":"Keep plumbing wall","ready":true}'
 ```
 
-You should see generated ICM folders under the target (`AGENTS.md`, `_config/`, `setup/client.md`, `stages/01-audit-ia` … `07-cd`, `brand-vault/`). You should **not** see `apps/` monorepo rails, and files must not be a mass-identical dump of the workbench SoT.
+You should see generated ICM folders under the target (`AGENTS.md`, `_config/`, `setup/project-brief.md`, `stages/…`). You should **not** see `apps/` monorepo rails, and files must not be a mass-identical dump of the workbench SoT.
+
+Generic apply **refuses** if any of the four slots is empty or `ready` is not yes.
 
 ## What you've learned
 
 - Start Forge with `/forge-interview`
-- ICM BASE is generated from interview answers (SoT is interview reference only)
-- Answers fill `client.md` and gate folders
-- Software rails are a separate opt-in sibling
+- Interview is invent-and-branch until enough-to-structure, then ready
+- ICM BASE is generated from answers (SoT is interview reference only)
+- Software rails are not the core interview
 
 ## Next steps
 
-- Re-run with software toggle **yes** to add a `forge-software/` sibling
-- How-to: run stage 01 after humans edit `setup/client.md` (not this tutorial)
+- Typed packs (website 0–5, branding, …) come later; they are not this tutorial
+- How-to: run a stage after humans edit `setup/project-brief.md` (not this tutorial)

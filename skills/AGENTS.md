@@ -2,14 +2,15 @@
 
 Interview skill lives here. Drives `/forge-interview`.
 
-- Generate ICM BASE from interview answers (no SoT copytree into target).
+- Adaptive invent-and-branch (no fixed Q spine). Domain-agnostic.
+- Enough-to-structure machine: `what` / `who` / `done` / `constraints`; ready gate last; max 12 invent rounds. Suggestions only when asked.
+- Generate thin generic ICM BASE from interview answers (no SoT copytree into target).
 - Captain workbench / `_core` are read-only reference during interview.
-- Website intake + gated folders (brand-vault, stack refs, optional skills/stages).
-- **Atlas lock (FM-325):** website interview 0–5 experience gate selects versioned domain pack + probe depth + vocab; session expert = load pack (never dump pack body into target).
-- Software rails only on an explicit separate toggle (generated sibling stubs, not template dumps).
-- Apply helper: `forge-interview/apply_icm_base.py`.
+- Typed packs (website 0–5) are a later hook — session expert load only; never dump pack body into target. Not the day-one interview spine.
+- Software rails are an optional later pack branch (generated sibling stubs), not the core interview.
+- Apply helper: `forge-interview/apply_icm_base.py`. Grill machine: `forge-interview/grill.py`.
 
 ## Child DOX Index
 
-- forge-interview/AGENTS.md — ICM interview skill + experience gate
-- forge-interview/packs/AGENTS.md — versioned domain pack contract
+- forge-interview/AGENTS.md — ICM interview skill + enough-to-structure grill
+- forge-interview/packs/AGENTS.md — versioned domain pack contract (later hook)
