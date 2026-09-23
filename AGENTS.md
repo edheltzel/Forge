@@ -17,7 +17,7 @@ Enough-to-structure: **what**, **who**, **done**, **constraints** (all non-empty
 Typed packs (website 0–5 experience gate, probe depth, vocab) are a **later hook** — not the day-one interview spine. When a pack exists, load it as session expert; never dump pack body into the target.
 
 ICM-as-standard for the deliverable:
-- Always **generate** a minimal **ICM BASE** from interview answers (thin generic skeleton day one; website stages 01–07 only when a later typed pack applies). Do **not** copytree workbench / ICM-reuseable-template / product workspaces into the target.
+- Always **generate** a minimal **ICM BASE** from interview answers. Stage shape comes from the interview: the agent records the type it inferred (`project_type`) and the stage slugs that project actually has (`stages`), and apply lays exactly those; absent `stages` falls back to the generic four, and website 01–07 only when a later typed pack applies. No type-to-stages table in the generator. Do **not** copytree workbench / ICM-reuseable-template / product workspaces into the target.
 - Interview answers → durable artifacts (`setup/project-brief.md`, `setup/answers.json`, root `CONTEXT.md`). Website gated adds (brand-vault, stack refs) are later pack, not the day-one grill.
 - Stop after apply. No feature build.
 - Captain SoT folders are **read-only reference** for the interviewing agent. `skills/forge-interview` (`grill.py` + `apply_icm_base.py`) generate the target; they do not dump SoT trees.
@@ -26,7 +26,7 @@ Software rails only on an **explicit separate toggle** (optional later pack bran
 
 Legacy `agent-workflows/` one-liners are not the ICM apply target.
 
-Each run may synthesize a spec (`docs/spec.md` on the target, or Forge `specs/` if asked). Overlay/brownfield always writes that spec. Social/blog packs later.
+Each run may synthesize a spec (`docs/spec.md` on the target, or Forge `specs/` if asked). Overlay/brownfield always writes that spec, keeps the repo's own `AGENTS.md`, and appends one ICM pointer block to it. Social/blog packs later.
 
 
 ## Core Contract
