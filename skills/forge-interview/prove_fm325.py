@@ -188,8 +188,11 @@ def prove_spec() -> None:
     apply_json(ov, {**base, "mode": "overlay"}, wipe=False)
     if not (ov / "docs" / "spec.md").is_file():
         raise SystemExit("overlay must write spec")
-    if (ov / "AGENTS.md").read_text(encoding="utf-8") != "KEEP-ME\n":
+    agents = (ov / "AGENTS.md").read_text(encoding="utf-8")
+    if not agents.startswith("KEEP-ME\n"):
         raise SystemExit("overlay clobbered AGENTS.md")
+    if agents.count("<!-- forge-icm:start -->") != 1:
+        raise SystemExit("overlay must append exactly one ICM pointer block")
     if (ov / "README.md").read_text(encoding="utf-8") != "KEEP-README\n":
         raise SystemExit("overlay clobbered README.md")
     if src.read_text(encoding="utf-8") != "export {}\n":

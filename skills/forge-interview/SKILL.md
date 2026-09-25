@@ -99,16 +99,17 @@ Interview done = gap check pass ∧ ready yes.
 
 ## 4. Apply rails
 
-Ask target path if you do not already have it (greenfield path vs overlay into an existing repo). Overlay: do not replace `src/` or the live app tree; overlay always writes a spec. Greenfield spec only if they asked for one.
+Ask target path if you do not already have it (greenfield path vs overlay into an existing repo). Overlay: do not replace `src/` or the live app tree; overlay always writes a spec, and apply appends one marker-guarded ICM pointer block to the repo's existing `AGENTS.md` so its agent finds the binder. Greenfield spec only if they asked for one.
 
 Then run generate. Order is mandatory:
 
 1. Confirm `grill.py --check` reports enough-to-structure (all four slots + ready). If not, refuse and return to invent.
-2. **Generate BASE** as fresh files from interview content: numbered stages with CONTEXT stubs, `_config/`, `setup/`, `shared/`. Thin generic skeleton — **not** cloning Captain SoT folders, **not** the website 01–07 pipe unless a later typed pack says so.
-3. Persist `setup/project-brief.md` + `setup/answers.json` with what / who / done / constraints / notes / `ready: true`.
-4. Software sibling stubs **only** if they explicitly asked for software rails later (generated — no template tree dump). Do not prompt for Turbo/Nx as part of this apply.
-5. Spec: overlay always (problem may be `what`); greenfield when they asked.
-6. Stop. Do not build features. Do not treat `agent-workflows/` one-liners as the ICM deliverable.
+2. **Name the shape from the type you inferred.** Put your inference in `project_type` and the stages this project actually has in `stages` (slugs, in order — a podcast gets `01-format` … `05-distribute`, a remodel gets its own). Apply lays exactly those. Omit `stages` only when the interview never reached shape; then the generic `01-intake,02-discovery,03-build,04-review` spine fills in. Never offer the human a stage menu.
+3. **Generate BASE** as fresh files from interview content: numbered stages with CONTEXT stubs, `_config/`, `setup/`, `shared/`. Thin skeleton — **not** cloning Captain SoT folders, **not** the website 01–07 pipe unless a later typed pack says so.
+4. Persist `setup/project-brief.md` + `setup/answers.json` with project type / what / who / done / constraints / notes / `ready: true`.
+5. Software sibling stubs **only** if they explicitly asked for software rails later (generated — no template tree dump). Do not prompt for Turbo/Nx as part of this apply.
+6. Spec: overlay always (problem may be `what`); greenfield when they asked.
+7. Stop. Do not build features. Do not treat `agent-workflows/` one-liners as the ICM deliverable.
 
 ```
 python3 skills/forge-interview/apply_icm_base.py \
@@ -117,7 +118,7 @@ python3 skills/forge-interview/apply_icm_base.py \
   --answers-json '<slots + ready true>'
 ```
 
-Generic apply **refuses** if any enough-slot is empty or ready is not yes.
+Generic apply **refuses** if any enough-slot is empty, ready is not yes, or `stages` is anything but a non-empty list of slugs.
 
 ## 5. Close
 
