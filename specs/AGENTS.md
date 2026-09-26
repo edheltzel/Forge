@@ -1,4 +1,4 @@
 # specs
 
-Written when overlay/brownfield apply runs, or greenfield interview said yes with `spec_dest: forge`. Not source. Target default is `<workspace>/docs/spec.md`.
+Written on apply unless `write_spec` or `spec` is false. `spec_dest: forge` writes here as `specs/<slug>.md`. Target default is `<workspace>/docs/spec.md`.
 

@@ -69,7 +69,7 @@ Add a note if you want, then say ready. If you say ready while a slot is empty, 
 
 ## Step 5: Apply (or watch the agent apply)
 
-Name a target path when asked. The agent should **generate** a thin generic ICM BASE from the four slots, write `setup/project-brief.md` + `setup/answers.json`, then stop. No workbench copytree.
+Name a target path when asked. The agent should **generate** a thin generic ICM BASE from the four slots, write `docs/spec.md` unless they said no, then stop. Contract home for the workflow is `forge/` per root `AGENTS.md`. No workbench copytree.
 
 Non-interactive prove from the Forge repo:
 
@@ -82,7 +82,7 @@ python3 skills/forge-interview/apply_icm_base.py \
   --answers-json '{"what":"Kitchen remodel packet","who":"Our household","done":"Signed packet + inspection","constraints":"Keep plumbing wall","ready":true}'
 ```
 
-You should see generated ICM folders under the target (`AGENTS.md`, `_config/`, `setup/project-brief.md`, `stages/…`). You should **not** see `apps/` monorepo rails, and files must not be a mass-identical dump of the workbench SoT.
+Apply writes the workflow under `forge/` and a short pointer in root `AGENTS.md`. This prove should show `forge/AGENTS.md`, `forge/_config/`, `forge/setup/project-brief.md`, `forge/stages/…`, and `docs/spec.md`. You should **not** see `stages/` or `CONTEXT.md` at the target root, `apps/` monorepo rails, or a mass-identical dump of the workbench SoT.
 
 Generic apply **refuses** if any of the four slots is empty or `ready` is not yes.
 
@@ -96,4 +96,4 @@ Generic apply **refuses** if any of the four slots is empty or `ready` is not ye
 ## Next steps
 
 - Typed packs (website 0–5, branding, …) come later; they are not this tutorial
-- How-to: run a stage after humans edit `setup/project-brief.md` (not this tutorial)
+- How-to: run a stage after humans edit the brief (`forge/setup/project-brief.md` once cut over; `setup/project-brief.md` until then) (not this tutorial)

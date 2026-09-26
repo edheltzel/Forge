@@ -18,9 +18,9 @@ Parent: `skills/AGENTS.md`. Grill machine: `grill.py`. Apply helper: `apply_icm_
 - Typed pack floors (website 0–5 included) are a **hook for later**. Day one does not load packs as the interview spine. Never dump pack body into the target.
 - Software four-pack is not this interview. Optional later pack branch only if they explicitly ask.
 - No template dump / no copytree of workbench. Generate via mkdir + write.
-- Overlay reads existing docs (grill-with-docs); do not replace `src/`. Overlay keeps the repo's own `AGENTS.md` and appends one marker-guarded ICM pointer block (`<!-- forge-icm:start -->`) so its agent reaches `CONTEXT.md`. Overlay always writes a spec. Greenfield spec only when asked.
+- Overlay reads existing docs (grill-with-docs); do not replace `src/`. Both modes keep an existing root `AGENTS.md` and add one marker-guarded pointer (`<!-- forge-icm:start -->`) aimed at `forge/`. If root `AGENTS.md` is missing, apply writes a thin one. Apply writes `docs/spec.md` unless they said no (`write_spec` or `spec` false). The pointer is written to `AGENTS.md`, not into `CONTEXT.md`. It names `docs/spec.md` only when that file is written, names Forge `specs/<slug>.md` when `spec_dest` is `forge`, and omits the spec line when they said no.
 - The binder's shape comes from the interview: `project_type` and a `stages` slug list in answers, laid verbatim. No type-to-stages table in the generator. Absent `stages` falls back to the generic four; a non-list, empty, or non-slug `stages` refuses before anything is written.
-- Generic apply refuses unless gap check passes and `ready` is yes. Persist slots in `setup/answers.json` + `setup/project-brief.md`.
+- Generic apply refuses unless gap check passes and `ready` is yes. Persist slots in `forge/setup/answers.json` + `forge/setup/project-brief.md`. `--target` stays the project root.
 
 ## Work Guidance
 

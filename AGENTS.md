@@ -18,7 +18,8 @@ Typed packs (website 0–5 experience gate, probe depth, vocab) are a **later ho
 
 ICM-as-standard for the deliverable:
 - Always **generate** a minimal **ICM BASE** from interview answers. Stage shape comes from the interview: the agent records the type it inferred (`project_type`) and the stage slugs that project actually has (`stages`), and apply lays exactly those; absent `stages` falls back to the generic four, and website 01–07 only when a later typed pack applies. No type-to-stages table in the generator. Do **not** copytree workbench / ICM-reuseable-template / product workspaces into the target.
-- Interview answers → durable artifacts (`setup/project-brief.md`, `setup/answers.json`, root `CONTEXT.md`). Website gated adds (brand-vault, stack refs) are later pack, not the day-one grill.
+- The binder is a visible workspace at `forge/`, never `.forge/`, never `docs/icm/`, never a root `icm/`, and never loose ICM files at the target root. `forge/` is the workflow. `docs/` is only the prose shelf: `docs/spec.md` stays a sibling, not a file inside `forge/`. Do not flatten stage files into `docs/`. Project root keeps the project's own `AGENTS.md` (thin file on greenfield if missing) plus one marker-guarded pointer (`<!-- forge-icm:start -->`) to `forge/`. Binder entry: `forge/AGENTS.md`. Workflow contract: `forge/CONTEXT.md`. Answers: `forge/setup/answers.json`, `forge/setup/project-brief.md`. Stages, `_config/`, `shared/`, `setup/`, and any gated `brand-vault/` or workspace `skills/` live under `forge/`. Inside `forge/`, links stay relative (`setup/`, `stages/`, `_config/`). Do not write `CONTEXT.md`, `workflow-map.md`, `stages/`, `_config/`, `setup/`, `shared/`, or an ICM `README.md` at the target root. Do not replace the target `README.md` or `.gitignore`. Do not hide the binder. `forge-software/` stays a project-root sibling, not inside `forge/`. Website gated adds (brand-vault, stack refs) are later pack, not the day-one grill.
+- Apply writes that binder under `forge/` while `--target` stays the project root. Do not pass `--target` at `forge/`. Spec stays `docs/spec.md` unless `spec_dest` is `forge`.
 - Stop after apply. No feature build.
 - Captain SoT folders are **read-only reference** for the interviewing agent. `skills/forge-interview` (`grill.py` + `apply_icm_base.py`) generate the target; they do not dump SoT trees.
 
@@ -26,8 +27,7 @@ Software rails only on an **explicit separate toggle** (optional later pack bran
 
 Legacy `agent-workflows/` one-liners are not the ICM apply target.
 
-Each run may synthesize a spec (`docs/spec.md` on the target, or Forge `specs/` if asked). Overlay/brownfield always writes that spec, keeps the repo's own `AGENTS.md`, and appends one ICM pointer block to it. Social/blog packs later.
-
+Each run writes a spec unless they said no (`write_spec` or `spec` false). Default path is `docs/spec.md` on the target. `spec_dest: forge` writes Forge `specs/<slug>.md` instead. Problem is `spec_problem`, else `what`. Overlay/brownfield keeps the repo's own `AGENTS.md` and appends one ICM pointer block. The pointer targets `forge/` (see above), not a root `CONTEXT.md` and not `docs/icm/`. Social/blog packs later.
 
 ## Core Contract
 

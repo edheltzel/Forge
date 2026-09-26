@@ -221,7 +221,7 @@ def prove_generic_apply_gate() -> None:
     out = (proc.stdout or "") + (proc.stderr or "")
     if proc.returncode != 0:
         fail(f"generic apply with four slots + ready should succeed: {out}")
-    brief = (ok / "setup" / "project-brief.md").read_text(encoding="utf-8")
+    brief = (ok / "forge" / "setup" / "project-brief.md").read_text(encoding="utf-8")
     for needle in (
         "Kitchen remodel plan",
         "Our household",
@@ -230,10 +230,12 @@ def prove_generic_apply_gate() -> None:
     ):
         if needle not in brief:
             fail(f"brief missing {needle!r}")
-    ctx = (ok / "CONTEXT.md").read_text(encoding="utf-8")
+    ctx = (ok / "forge" / "CONTEXT.md").read_text(encoding="utf-8")
     if "Kitchen remodel plan" not in ctx:
         fail("CONTEXT.md should fill from what")
-    answers = json.loads((ok / "setup" / "answers.json").read_text(encoding="utf-8"))
+    if (ok / "CONTEXT.md").exists() or (ok / "stages").exists():
+        fail("binder files must not land at the project root")
+    answers = json.loads((ok / "forge" / "setup" / "answers.json").read_text(encoding="utf-8"))
     if answers.get("what") != GENERIC_OK["what"]:
         fail("answers.json should persist slots")
     print("generic apply gate OK")

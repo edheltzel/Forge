@@ -35,18 +35,26 @@ def fail(msg: str) -> None:
     raise SystemExit(f"FAIL: {msg}")
 
 
-def apply_to(target: Path, payload: dict, product: str = "generic") -> subprocess.CompletedProcess:
+def apply_to(
+    target: Path,
+    payload: dict,
+    product: str = "generic",
+    forge_root: Path | None = None,
+) -> subprocess.CompletedProcess:
+    cmd = [
+        sys.executable,
+        str(APPLY),
+        "--target",
+        str(target),
+        "--product",
+        product,
+        "--answers-json",
+        json.dumps(payload),
+    ]
+    if forge_root is not None:
+        cmd.extend(["--forge-root", str(forge_root)])
     return subprocess.run(
-        [
-            sys.executable,
-            str(APPLY),
-            "--target",
-            str(target),
-            "--product",
-            product,
-            "--answers-json",
-            json.dumps(payload),
-        ],
+        cmd,
         cwd=str(ROOT),
         capture_output=True,
         text=True,
@@ -55,7 +63,7 @@ def apply_to(target: Path, payload: dict, product: str = "generic") -> subproces
 
 
 def stage_names(target: Path) -> list[str]:
-    return sorted(p.name for p in (target / "stages").iterdir() if p.is_dir())
+    return sorted(p.name for p in (target / "forge" / "stages").iterdir() if p.is_dir())
 
 
 def tree_digest(root: Path) -> str:
@@ -77,13 +85,17 @@ def prove_type_shaped_greenfield(tmp: Path) -> None:
     if got != sorted(PODCAST_STAGES):
         fail(f"stages should be the interview's own, got {got}")
 
-    context = (target / "CONTEXT.md").read_text(encoding="utf-8")
-    brief = (target / "setup" / "project-brief.md").read_text(encoding="utf-8")
+    context = (target / "forge" / "CONTEXT.md").read_text(encoding="utf-8")
+    brief = (target / "forge" / "setup" / "project-brief.md").read_text(encoding="utf-8")
     for name, text in (("CONTEXT.md", context), ("project-brief.md", brief)):
         if "podcast launch" not in text:
             fail(f"{name} should name the inferred project type")
-
-    stage_context = (target / "stages" / "03-record" / "CONTEXT.md").read_text(encoding="utf-8")
+    if (target / "CONTEXT.md").exists() or (target / "stages").exists():
+        fail("binder files must not land at the project root")
+    root_agents = (target / "AGENTS.md").read_text(encoding="utf-8")
+    if "forge/CONTEXT.md" not in root_agents:
+        fail("greenfield root AGENTS.md should point at forge/")
+    stage_context = (target / "forge" / "stages" / "03-record" / "CONTEXT.md").read_text(encoding="utf-8")
     if "03-record" not in stage_context:
         fail("each invented stage should get its own CONTEXT.md")
     print("type-shaped greenfield OK")
@@ -157,8 +169,8 @@ def prove_brownfield_overlay(tmp: Path) -> None:
         fail("overlay must leave exactly one ICM pointer block")
     if "internal tool" not in agents:
         fail("pointer block should name the inferred project type")
-    if "CONTEXT.md" not in agents:
-        fail("pointer block should route the agent to CONTEXT.md")
+    if "forge/CONTEXT.md" not in agents:
+        fail("pointer block should route the agent to forge/CONTEXT.md")
 
     if tree_digest(target / "src") != src_before:
         fail("overlay must not touch src/")
@@ -201,13 +213,54 @@ def prove_greenfield_spec(tmp: Path) -> None:
     for slot in ("what", "who", "done", "constraints"):
         if SLOTS[slot] not in spec:
             fail(f"spec should carry the {slot} answer")
+    default_agents = (target / "AGENTS.md").read_text(encoding="utf-8")
+    if "docs/spec.md" not in default_agents:
+        fail("default pointer should name docs/spec.md")
 
-    bare = tmp / "greenfield-nospec"
+    bare = tmp / "greenfield-default-spec"
     proc = apply_to(bare, {**SLOTS, "project_type": "podcast launch"})
     if proc.returncode != 0:
-        fail(f"greenfield without a spec request should succeed: {proc.stderr}")
-    if (bare / "docs" / "spec.md").exists():
-        fail("greenfield writes a spec only when asked")
+        fail(f"greenfield without a spec flag should succeed: {proc.stderr}")
+    bare_spec = bare / "docs" / "spec.md"
+    if not bare_spec.is_file():
+        fail("greenfield writes a spec unless they said no")
+    if SLOTS["what"] not in bare_spec.read_text(encoding="utf-8"):
+        fail("default spec problem should fall back to what")
+
+    declined = tmp / "greenfield-nospec"
+    proc = apply_to(declined, {**SLOTS, "project_type": "podcast launch", "write_spec": False})
+    if proc.returncode != 0:
+        fail(f"greenfield spec decline should succeed: {proc.stderr}")
+    if (declined / "docs" / "spec.md").exists():
+        fail("write_spec false should omit spec")
+    declined_agents = (declined / "AGENTS.md").read_text(encoding="utf-8")
+    if "docs/spec.md" in declined_agents or "Spec:" in declined_agents:
+        fail("pointer must omit the spec line when write_spec is false")
+
+    forge_home = tmp / "forge-specs-root"
+    relocated = tmp / "spec-in-forge"
+    proc = apply_to(
+        relocated,
+        {
+            **SLOTS,
+            "project_type": "podcast launch",
+            "spec_dest": "forge",
+            "spec_slug": "podcast-launch",
+            "spec_problem": "Home bakers have nowhere to hear how small bakeries actually run.",
+        },
+        forge_root=forge_home,
+    )
+    if proc.returncode != 0:
+        fail(f"spec_dest forge should succeed: {proc.stderr}")
+    if not (forge_home / "specs" / "podcast-launch.md").is_file():
+        fail("spec_dest forge should write specs/podcast-launch.md")
+    if (relocated / "docs" / "spec.md").exists():
+        fail("spec_dest forge must not also write docs/spec.md")
+    relocated_agents = (relocated / "AGENTS.md").read_text(encoding="utf-8")
+    if "docs/spec.md" in relocated_agents:
+        fail("pointer must not advertise docs/spec.md when spec_dest is forge")
+    if "specs/podcast-launch.md" not in relocated_agents:
+        fail("pointer should name the Forge specs path")
     print("greenfield spec OK")
 
 

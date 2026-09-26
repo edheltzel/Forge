@@ -38,7 +38,7 @@ HARD:
 - **Grill bound:** max **12** invent rounds after the opener. Past the cap, only chase empty enough-slots (no new soft gaps). Cap does **not** waive the gap check.
 - **Suggestions only when the human asks.** Ground in industry standards / best practices. Never force a stack or host. Never always-recommend.
 - Always **generate** a thin **generic ICM BASE** from interview answers after gap pass ∧ ready yes. **No template dump.** Never `shutil.copytree` / `copy2` of workbench, `ICM-reuseable-template`, or product workspaces into the target.
-- Durable artifacts: `setup/project-brief.md`, `setup/answers.json`, root `CONTEXT.md`.
+- Binder lives at `forge/` (root `AGENTS.md`). Not `.forge/`. Run `apply_icm_base.py` with `--target` set to the project root. The helper writes `forge/CONTEXT.md`, `forge/setup/`, and `forge/stages/`. Do not pass `--target <project>/forge`.
 - Software four-pack (Turbo/Nx/host/data/identity) is **not** this interview. Dead end for the product story. Optional later pack branch only if they explicitly ask later — never a required ask.
 - Stop after apply. Humans edit markdown next.
 
@@ -99,16 +99,16 @@ Interview done = gap check pass ∧ ready yes.
 
 ## 4. Apply rails
 
-Ask target path if you do not already have it (greenfield path vs overlay into an existing repo). Overlay: do not replace `src/` or the live app tree; overlay always writes a spec, and apply appends one marker-guarded ICM pointer block to the repo's existing `AGENTS.md` so its agent finds the binder. Greenfield spec only if they asked for one.
+Ask target path if you do not already have it (greenfield path vs overlay into an existing repo). Overlay: do not replace `src/` or the live app tree. Apply writes the binder under `forge/` and a marker-guarded pointer in root `AGENTS.md` (creates a thin file when missing). `--target` is the project root. Do not pass `--target <project>/forge`. Do not ask whether they want a spec.
 
 Then run generate. Order is mandatory:
 
 1. Confirm `grill.py --check` reports enough-to-structure (all four slots + ready). If not, refuse and return to invent.
 2. **Name the shape from the type you inferred.** Put your inference in `project_type` and the stages this project actually has in `stages` (slugs, in order — a podcast gets `01-format` … `05-distribute`, a remodel gets its own). Apply lays exactly those. Omit `stages` only when the interview never reached shape; then the generic `01-intake,02-discovery,03-build,04-review` spine fills in. Never offer the human a stage menu.
-3. **Generate BASE** as fresh files from interview content: numbered stages with CONTEXT stubs, `_config/`, `setup/`, `shared/`. Thin skeleton — **not** cloning Captain SoT folders, **not** the website 01–07 pipe unless a later typed pack says so.
-4. Persist `setup/project-brief.md` + `setup/answers.json` with project type / what / who / done / constraints / notes / `ready: true`.
+3. **Generate BASE** by running `apply_icm_base.py` with `--target` set to the project root. The helper writes numbered stages with CONTEXT stubs, `_config/`, `setup/`, `shared/`, `CONTEXT.md`, and `workflow-map.md` under `forge/`. Paths inside that folder stay relative. Thin skeleton — **not** cloning Captain SoT folders, **not** the website 01–07 pipe unless a later typed pack says so. Do not pass `--target <project>/forge`.
+4. The helper persists `forge/setup/project-brief.md` + `forge/setup/answers.json` with project type / what / who / done / constraints / notes / `ready: true`.
 5. Software sibling stubs **only** if they explicitly asked for software rails later (generated — no template tree dump). Do not prompt for Turbo/Nx as part of this apply.
-6. Spec: overlay always (problem may be `what`); greenfield when they asked.
+6. Spec: write `docs/spec.md` unless they said they do not want one. Then set `write_spec` false. Do not ask. Problem is `spec_problem` if they gave one, else `what`. `spec_dest: forge` writes Forge `specs/<slug>.md` instead.
 7. Stop. Do not build features. Do not treat `agent-workflows/` one-liners as the ICM deliverable.
 
 ```
