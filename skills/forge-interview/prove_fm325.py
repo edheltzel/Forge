@@ -22,13 +22,13 @@ DEEP = (
     "analytics_owner",
 )
 SPINE = (
-    "AGENTS.md",
-    "CONTEXT.md",
-    "setup/answers.json",
-    "setup/client.md",
-    "stages/01-audit-ia/CONTEXT.md",
-    "stages/07-cd/CONTEXT.md",
-    "_config/intake-questions.md",
+    "forge/AGENTS.md",
+    "forge/CONTEXT.md",
+    "forge/setup/answers.json",
+    "forge/setup/client.md",
+    "forge/stages/01-audit-ia/CONTEXT.md",
+    "forge/stages/07-cd/CONTEXT.md",
+    "forge/_config/intake-questions.md",
 )
 
 
@@ -149,33 +149,18 @@ def prove_spec() -> None:
     if "No iOS app this run" not in text:
         raise SystemExit("greenfield spec missing continued spec_out_of_scope")
     missing = Path("/tmp/fm325-spec-noproblem")
-    proc = subprocess.run(
-        [
-            sys.executable,
-            str(APPLY),
-            "--target",
-            str(missing),
-            "--product",
-            "website",
-            "--answers-json",
-            json.dumps({**base, "write_spec": True, "mode": "greenfield", "experience_level": 0}),
-        ],
-        cwd=str(ROOT),
-        capture_output=True,
-        text=True,
-        check=False,
+    apply_json(
+        missing,
+        {**base, "mode": "greenfield", "experience_level": 0},
     )
-    err = (proc.stdout or "") + (proc.stderr or "")
-    if proc.returncode == 0:
-        raise SystemExit("greenfield write_spec without spec_problem should fail")
-    if "spec_problem" not in err:
-        raise SystemExit(f"expected spec_problem error, got {err}")
-
+    fallback = (missing / "docs" / "spec.md").read_text(encoding="utf-8")
+    if "staging then prod" not in fallback:
+        raise SystemExit("default spec should use shipped_live when spec_problem is absent")
 
     skip = Path("/tmp/fm325-spec-skip")
-    apply_json(skip, {**base, "mode": "greenfield"})
+    apply_json(skip, {**base, "mode": "greenfield", "write_spec": False})
     if (skip / "docs" / "spec.md").is_file():
-        raise SystemExit("greenfield without write_spec should omit spec")
+        raise SystemExit("write_spec false should omit spec")
     ov = Path("/tmp/fm325-spec-ov")
     if ov.exists():
         shutil.rmtree(ov)
@@ -204,7 +189,7 @@ def prove_spec() -> None:
 
 
 def load_answers(target: Path) -> dict:
-    return json.loads((target / "setup" / "answers.json").read_text(encoding="utf-8"))
+    return json.loads((target / "forge" / "setup" / "answers.json").read_text(encoding="utf-8"))
 
 
 def assert_spine(target: Path) -> None:
@@ -219,7 +204,7 @@ def assert_no_dump(target: Path) -> None:
     for p in target.rglob("*"):
         if any(b in p.name for b in banned_names):
             raise SystemExit(f"banned workbench marker in target: {p}")
-    ptr = target / "setup" / "session-expert.md"
+    ptr = target / "forge" / "setup" / "session-expert.md"
     if ptr.is_file():
         body = ptr.read_text(encoding="utf-8")
         if "core_slots:" in body or "phrase_hints:" in body or "probes:" in body:
@@ -304,7 +289,7 @@ def main() -> None:
         if not a5.get(k):
             raise SystemExit(f"L5 missing deep field {k}")
 
-    client5 = (L5_TARGET / "setup" / "client.md").read_text(encoding="utf-8")
+    client5 = (L5_TARGET / "forge" / "setup" / "client.md").read_text(encoding="utf-8")
     for label in (
         "Redirect strategy",
         "SEO equity notes",
@@ -315,7 +300,7 @@ def main() -> None:
         if label not in client5:
             raise SystemExit(f"L5 client.md missing {label}")
 
-    client0 = (L0_TARGET / "setup" / "client.md").read_text(encoding="utf-8")
+    client0 = (L0_TARGET / "forge" / "setup" / "client.md").read_text(encoding="utf-8")
     for label in ("Redirect strategy", "SEO equity notes"):
         if label in client0:
             raise SystemExit(f"L0 client.md should omit deep probe section {label}")
