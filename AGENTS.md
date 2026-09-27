@@ -27,7 +27,7 @@ Software rails only on an **explicit separate toggle** (optional later pack bran
 
 Legacy `agent-workflows/` one-liners are not the ICM apply target.
 
-Each run writes a spec unless `write_spec` or `spec` is false in the answers before apply. Setting the flag after apply does not skip a file already written. Default path is `docs/spec.md` on the target. `spec_dest: forge` writes Forge `specs/<slug>.md` instead. Problem is `spec_problem`, else `what`. Overlay/brownfield keeps the repo's own `AGENTS.md` and writes or replaces one ICM pointer block. The pointer targets `forge/` and names the spec when one is written, not a root `CONTEXT.md` and not `docs/icm/`. Social/blog packs later.
+Each run writes a spec unless `write_spec` is false in the answers before apply. The interview says that default immediately before the ready question, and sets the key explicitly. A missing key still writes for a call that is not this interview. Setting the flag after apply does not skip a file already written. Default path is `docs/spec.md` on the target. `spec_dest: forge` writes Forge `specs/<slug>.md` instead. Problem is `spec_problem`, else `what`. Overlay/brownfield keeps the repo's own `AGENTS.md` and writes or replaces one ICM pointer block. The pointer targets `forge/` and names the spec when one is written, not a root `CONTEXT.md` and not `docs/icm/`. Social/blog packs later.
 
 ## Core Contract
 

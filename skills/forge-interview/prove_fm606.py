@@ -245,6 +245,35 @@ def prove_skill_retarget() -> None:
     text = SKILL.read_text(encoding="utf-8")
     if grill.READY_PROMPT not in text:
         fail("SKILL.md must include the ready-gate prompt")
+    if "## 3. Ready gate" not in text:
+        fail("SKILL.md must have a ready-gate section")
+    section = text.split("## 3. Ready gate", 1)[1].split("\n## ", 1)[0]
+    disclosure = (
+        "After you say ready, you'll name the folder. "
+        "The workflow goes under `forge/` there. "
+        "I'll also write `docs/spec.md` unless you say you don't want one. "
+        "If that file is already there, this replaces it."
+    )
+    quote = f"> {grill.READY_PROMPT}"
+    if disclosure not in section:
+        fail("ready-gate section must include the disclosure")
+    if quote not in section:
+        fail("ready-gate section must quote the ready prompt")
+    if section.find(disclosure) > section.find(quote):
+        fail("disclosure must precede the ready-question blockquote")
+    for needle in (
+        "A bare no, not yet, or wait is not ready",
+        "An explicit refusal of the spec write is a decline",
+        "Set `write_spec` false",
+        "name Forge `specs/<slug>.md` instead of `docs/spec.md`",
+    ):
+        if needle not in section:
+            fail(f"ready-gate section missing {needle!r}")
+    example = text.split("--answers-json", 1)[-1][:160]
+    if "write_spec" not in example:
+        fail("interview answers example must include write_spec")
+    if "Do not ask whether they want a spec" in text:
+        fail("SKILL.md must not hide the spec")
     if "Invent-and-branch" not in text and "invent-and-branch" not in text:
         fail("SKILL.md must name invent-and-branch")
     if "max **12**" not in text:
