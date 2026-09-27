@@ -627,7 +627,7 @@ def icm_pointer_block(target: Path, answers: dict, forge_root: Path) -> str:
         lines.append(spec_line)
     lines.extend(
         [
-            "- The application tree stays yours. ICM documents the work; it does not edit `src/`.",
+            "- Existing project files stay yours. ICM documents the work; it does not edit `src/`.",
             ICM_POINTER_END,
         ]
     )
@@ -862,7 +862,7 @@ def generate_generic_base(target: Path, stages: list[str], answers: dict | None 
         home / "AGENTS.md",
         "# ICM workspace\n\nFolder structure is the workflow architecture. "
         "Read this file, then CONTEXT.md, then the current stage CONTEXT.md only.\n"
-        "Paths in this folder are relative to `forge/`. Product code lives at the repo root, not here.\n",
+        "Paths in this folder are relative to `forge/`. The project lives at the repo root, not in this folder.\n",
         clobber=clobber,
     )
     what = answers.get("what") or answers.get("goal") or answers.get("client_name") or "(fill from interview)"

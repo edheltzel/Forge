@@ -20,15 +20,17 @@ First run: [Getting started](docs/getting-started.md).
 
 ## Spec
 
-Apply writes `docs/spec.md` unless you say you do not want one. Forge does not ask. If you say no, the agent sets `write_spec` to false and skips the file.
+Apply writes `docs/spec.md` unless you already said you do not want one. Forge does not ask. Saying no skips the file only if the agent puts `write_spec` false in the answers before apply runs. Setting that flag after apply does not delete a file already written.
 
-The file is a handoff, not the app and not the workflow. Sections: Problem, Solution, Scope, Out of scope, Interview. Problem is your `spec_problem` if you gave one, otherwise `what`. Solution is a stock sentence unless you set `spec_solution`. `done` is only inside the Interview JSON. There is no Done section.
+The file is a handoff, not the project and not the workflow. Sections: Problem, Solution, Scope, Out of scope, Interview. Problem is your `spec_problem` if you gave one, otherwise `what`. Solution is `spec_solution` if you set it. Otherwise it names the target path, the generator product, and the mode. Day-one product is `generic`, not the inferred project type. Mode is `mode` from the answers, or `greenfield` if that key is missing. `done` is only inside the Interview JSON. There is no Done section.
 
-`spec_dest: forge` writes the same file to this repo at `specs/<slug>.md` instead of the target.
+If `docs/spec.md` already exists and you did not say no, apply overwrites it.
+
+`spec_dest: forge` writes the same file to this repo at `specs/<slug>.md` instead of the target. The root `AGENTS.md` note names that path when the file is written, and omits the spec line when it is skipped.
 
 ## Greenfield
 
-A new folder. Forge asks until it has what, who, done, and constraints, then lays the workflow and stops. It does not build the app.
+A new folder. Forge asks until it has what, who, done, and constraints, then lays the workflow and stops. It does not build the project.
 
 ```mermaid
 flowchart TD
@@ -36,42 +38,26 @@ flowchart TD
   B --> C{Four facts filled?}
   C -->|No| B
   C -->|Yes| D{Ready to structure it?}
-  D -->|Not yet| B
+  D -->|Not yet| R[Forge asks the ready question again]
+  R --> D
   D -->|Yes| E[You name the new folder]
-  E --> F[Write the workflow]
-  E --> G[Write a short AGENTS.md at the root]
-  E --> H[Write docs/spec.md]
-  F --> K[Stop]
+  E --> F[Write the workflow under forge/]
+  E --> G[Write a short root AGENTS.md]
+  E --> H{Said no to a spec?}
+  H -->|Yes| K[Stop]
+  H -->|No| I[Write docs/spec.md]
+  F --> K
   G --> K
-  H --> K
+  I --> K
 ```
 
-Say you do not want a spec and that last write is skipped.
-
-The workflow lives in `forge/`. Root `AGENTS.md` only points there.
+The workflow lives in `forge/`. Root `AGENTS.md` points there. When a spec was written, that same note names it. The note also says not to edit `src/`.
 
 ## Brownfield
 
-An existing app. Forge reads `AGENTS.md`, `README.md`, and `docs/`, asks only what those files do not already say, and adds the workflow beside the code.
+An existing folder. It does not have to be an app. If that folder is already open, Forge reads `AGENTS.md`, `README.md`, and `docs/` and does not re-ask facts those files already state. If it is not already open, Forge asks the four facts, then asks where to write. It does not go find a repo on its own.
 
-```mermaid
-flowchart TD
-  A[You point Forge at an existing project] --> B[Forge reads AGENTS.md, README, and docs]
-  B --> C[Forge asks only what those files do not already say]
-  C --> D{Four facts filled?}
-  D -->|No| C
-  D -->|Yes| E{Ready to structure it?}
-  E -->|Not yet| C
-  E -->|Yes| F[Add the workflow next to the app]
-  E --> G{Root AGENTS.md already exists?}
-  G -->|Yes| N[Append one pointer note]
-  G -->|No| M[Write a short AGENTS.md that points at forge/]
-  E --> H[Write docs/spec.md]
-  F --> I[Stop. src/ is unchanged.]
-  N --> I[Stop. src/ is unchanged.]
-  M --> I
-  H --> I
-```
+Your README stays. `src/` stays if you have one. The workflow is written under `forge/`, beside what is already there.
 
-Your README and app stay. If `AGENTS.md` was already there, Forge appends one pointer note. If it was missing, Forge writes a short one. The workspace contract stays in `forge/`. Running apply twice replaces that note. It does not stack. Say you do not want a spec and `docs/spec.md` is skipped. `src/` is still untouched.
+If root `AGENTS.md` exists and both pointer markers are still there, a later run replaces that note. It does not add a second copy. That same run rewrites the files under `forge/`. If a spec is written, it also rewrites `docs/spec.md`, including one that was already there. Saying no skips the spec only when `write_spec` is false before that run.
 
