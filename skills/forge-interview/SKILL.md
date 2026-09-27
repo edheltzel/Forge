@@ -87,11 +87,10 @@ Experience 0–5 / website pack: **not loaded day one**. When a typed pack exist
 
 ## 3. Ready gate (only after gap check passes)
 
-When all four slots are non-empty, say this first:
+When all four slots are non-empty, say exactly one of these, then ask the ready question. Do not say both.
 
-After you say ready, you'll name the folder. The workflow goes under `forge/` there. I'll also write `docs/spec.md` unless you say you don't want one. If that file is already there, this replaces it.
-
-If they set `spec_dest` to `forge`, name Forge `specs/<slug>.md` instead of `docs/spec.md`, and say that path is the one replaced.
+- Default: After you say ready, you'll name the folder. The workflow goes under `forge/` there. I'll also write `docs/spec.md` unless you say you don't want one. If that file is already there, this replaces it.
+- `spec_dest: forge`: After you say ready, you'll name the folder. The workflow goes under `forge/` there. I'll also write Forge `specs/<slug>.md` unless you say you don't want one. If that file is already there, this replaces it.
 
 Then ask **exactly**:
 
