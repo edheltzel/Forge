@@ -34,7 +34,7 @@ HARD:
 - **Invent-and-branch.** Forge invents the next question from remaining gaps. There is **no** fixed Q1–Q5 / core-8 product spine.
 - **Enough-to-structure** (machine): after trim, **what**, **who**, **done**, **constraints** are all non-empty. That is the only day-one floor. Typed pack floors are a hook for later — **none ship in this interview**.
 - **Ready-yes alone must not lay the binder.** If they say ready with empty slots: refuse, name the empty slots in plain words, invent the next question for the first empty slot.
-- **Offer the ready gate only after the gap check passes.** Exact ask: Are you ready for us to structure this project, or is there anything else you want to add?
+- **Offer the ready gate only after the gap check passes.** The spoken order is in section 3. Do not use this bullet as a second script.
 - **Grill bound:** max **12** invent rounds after the opener. Past the cap, only chase empty enough-slots (no new soft gaps). Cap does **not** waive the gap check.
 - **Suggestions only when the human asks.** Ground in industry standards / best practices. Never force a stack or host. Never always-recommend.
 - Always **generate** a thin **generic ICM BASE** from interview answers after gap pass ∧ ready yes. **No template dump.** Never `shutil.copytree` / `copy2` of workbench, `ICM-reuseable-template`, or product workspaces into the target.
@@ -87,25 +87,31 @@ Experience 0–5 / website pack: **not loaded day one**. When a typed pack exist
 
 ## 3. Ready gate (only after gap check passes)
 
-When all four slots are non-empty, ask **exactly**:
+When all four slots are non-empty, say this first:
+
+After you say ready, you'll name the folder. The workflow goes under `forge/` there. I'll also write `docs/spec.md` unless you say you don't want one. If that file is already there, this replaces it.
+
+Then ask **exactly**:
 
 > Are you ready for us to structure this project, or is there anything else you want to add?
 
-- If they add more: take the note, re-run the gap check, then ask the ready gate again until they say ready.
+- A bare no, not yet, or wait is not ready. Do not set `write_spec` false. Ask this gate again.
+- An explicit refusal of the spec write is a decline. Set `write_spec` false. A decline alone is not ready-yes. Say the spec will be skipped, repeat the disclosure, and ask this gate again.
+- If they add a project note that is not a spec refusal: take the note, re-run the gap check, then ask this gate again until they say ready.
 - If they say ready while any required slot is empty: **refuse structure**. Name the empty slots in plain words. Invent the next question for the first empty one. Do not call apply.
-- If they say ready and the gap check passes: interview done. Go to apply.
+- If they say ready and the gap check passes: interview done. A decline that shares that utterance still sets `write_spec` false. Go to apply.
 
 Interview done = gap check pass ∧ ready yes.
 
 ## 4. Apply rails
 
-Ask target path if you do not already have it (greenfield path vs overlay into an existing repo). Overlay: do not replace `src/` or the live app tree. Apply writes the binder under `forge/` and a marker-guarded pointer in root `AGENTS.md` (creates a thin file when missing). `--target` is the project root. Do not pass `--target <project>/forge`. Do not ask whether they want a spec.
+Ask target path if you do not already have it (greenfield path vs overlay into an existing repo). Overlay: do not replace `src/` or the live app tree. Apply writes the binder under `forge/` and a marker-guarded pointer in root `AGENTS.md` (creates a thin file when missing). `--target` is the project root. Do not pass `--target <project>/forge`. Do not quiz them about a spec. Section 3 already stated the default.
 
 Then run generate. Order is mandatory:
 
 1. Confirm `grill.py --check` reports enough-to-structure (all four slots + ready). If not, refuse and return to invent.
 2. **Name the shape from the type you inferred.** Put your inference in `project_type` and the stages this project actually has in `stages` (slugs, in order — a podcast gets `01-format` … `05-distribute`, a remodel gets its own). Apply lays exactly those. Omit `stages` only when the interview never reached shape; then the generic `01-intake,02-discovery,03-build,04-review` spine fills in. Never offer the human a stage menu.
-3. If they said they do not want a spec, set `write_spec` false in the answers now, before the helper runs. If they gave `spec_problem`, `spec_solution`, or `spec_dest`, put those in the same JSON. Do not ask. Do not set the flag after the helper exits. A missing `write_spec` still writes the spec.
+3. Set `write_spec` in the answers now, before the helper runs. `true` when the disclosure was spoken and they did not decline. `false` when they explicitly refused the spec write. Do not omit the key on this path. Do not set the flag after the helper exits. A bare no at the ready gate is not a decline.
 4. **Generate BASE** by running `apply_icm_base.py` with `--target` set to the project root. The helper writes numbered stages with CONTEXT stubs, `_config/`, `setup/`, `shared/`, `CONTEXT.md`, and `workflow-map.md` under `forge/`, and writes the spec unless step 3 declined it. Paths inside that folder stay relative. Thin skeleton — **not** cloning Captain SoT folders, **not** the website 01–07 pipe unless a later typed pack says so. Do not pass `--target <project>/forge`. Problem is `spec_problem` if they gave one, else `what`. `spec_dest: forge` writes Forge `specs/<slug>.md` instead of `docs/spec.md`.
 5. The helper persists `forge/setup/project-brief.md` + `forge/setup/answers.json` with project type / what / who / done / constraints / notes / `ready: true`.
 6. Software sibling stubs **only** if they explicitly asked for software rails later (generated — no template tree dump). Do not prompt for Turbo/Nx as part of this apply.
@@ -115,13 +121,13 @@ Then run generate. Order is mandatory:
 python3 skills/forge-interview/apply_icm_base.py \
   --target <path> \
   --product generic \
-  --answers-json '<slots + ready true; write_spec false if they said no>'
+  --answers-json '<slots + ready true + write_spec true|false>'
 ```
 
 Generic apply **refuses** if any enough-slot is empty, ready is not yes, or `stages` is anything but a non-empty list of slugs.
 
 ## 5. Close
 
-Name: target path, inferred type (your inference, not a menu pick), the four slots in their words, invent-round count, ready yes, spec path or skip.
+Name: target path, inferred type (your inference, not a menu pick), the four slots in their words, invent-round count, ready yes, and the spec path. If they declined, say the spec was skipped instead of naming a path.
 
 Stop.

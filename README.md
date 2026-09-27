@@ -20,7 +20,7 @@ First run: [Getting started](docs/getting-started.md).
 
 ## Spec
 
-Apply writes `docs/spec.md` unless you already said you do not want one. Forge does not ask. Saying no skips the file only if the agent puts `write_spec` false in the answers before apply runs. Setting that flag after apply does not delete a file already written.
+Before the ready question, Forge says the workflow goes under `forge/` in the folder you name next, and that it will write `docs/spec.md` unless you say you do not want that file. If that file is already there, this replaces it. Saying you do not want it skips the file only if the agent puts `write_spec` false in the answers before apply runs. A bare no to the ready question is not that refusal. Setting the flag after apply does not delete a file already written. The close names the spec path, or says the spec was skipped.
 
 The file is a handoff, not the project and not the workflow. Sections: Problem, Solution, Scope, Out of scope, Interview. Problem is your `spec_problem` if you gave one, otherwise `what`. Solution is `spec_solution` if you set it. Otherwise it names the target path, the generator product, and the mode. Day-one product is `generic`, not the inferred project type. Mode is `mode` from the answers, or `greenfield` if that key is missing. `done` is only inside the Interview JSON. There is no Done section.
 

@@ -61,15 +61,15 @@ You should **not** see a website-vs-generic menu, an Astro-vs-Next quiz, or Turb
 
 ## Step 4: Ready gate
 
-When the four slots are filled, Forge asks:
+When the four slots are filled, Forge first says the workflow goes under `forge/` in the folder you name next, and that it will write `docs/spec.md` unless you say you do not want that file. If that file is already there, this replaces it. Then Forge asks:
 
 > Are you ready for us to structure this project, or is there anything else you want to add?
 
-Add a note if you want, then say ready. If you say ready while a slot is empty, Forge refuses, names the empty slots in plain words, and keeps grilling.
+A bare no means you are not ready. It does not skip the spec. Say you do not want `docs/spec.md` if that is the refusal. Add a note if you want, then say ready. If you say ready while a slot is empty, Forge refuses, names the empty slots in plain words, and keeps grilling. The close names the spec path, or says the spec was skipped.
 
 ## Step 5: Apply (or watch the agent apply)
 
-Name a target path when asked. The agent should **generate** a thin generic ICM BASE from the four slots, then stop. It writes `docs/spec.md` unless they said no. If they said no, `write_spec` false has to be in the answers before apply. Setting it after does not delete the file. Contract home for the workflow is `forge/` per root `AGENTS.md`. No workbench copytree.
+Name a target path when asked. The agent should **generate** a thin generic ICM BASE from the four slots, then stop. It writes `docs/spec.md` unless they refused that file. If they refused, `write_spec` false has to be in the answers before apply. Setting it after does not delete the file. Contract home for the workflow is `forge/` per root `AGENTS.md`. No workbench copytree.
 
 Non-interactive prove from the Forge repo:
 
