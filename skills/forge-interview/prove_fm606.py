@@ -261,6 +261,14 @@ def prove_skill_retarget() -> None:
         fail("ready-gate section must quote the ready prompt")
     if section.find(disclosure) > section.find(quote):
         fail("disclosure must precede the ready-question blockquote")
+    for needle in (
+        "A bare no, not yet, or wait is not ready",
+        "An explicit refusal of the spec write is a decline",
+        "Set `write_spec` false",
+        "name Forge `specs/<slug>.md` instead of `docs/spec.md`",
+    ):
+        if needle not in section:
+            fail(f"ready-gate section missing {needle!r}")
     example = text.split("--answers-json", 1)[-1][:160]
     if "write_spec" not in example:
         fail("interview answers example must include write_spec")

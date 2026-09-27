@@ -91,6 +91,8 @@ When all four slots are non-empty, say this first:
 
 After you say ready, you'll name the folder. The workflow goes under `forge/` there. I'll also write `docs/spec.md` unless you say you don't want one. If that file is already there, this replaces it.
 
+If they set `spec_dest` to `forge`, name Forge `specs/<slug>.md` instead of `docs/spec.md`, and say that path is the one replaced.
+
 Then ask **exactly**:
 
 > Are you ready for us to structure this project, or is there anything else you want to add?
