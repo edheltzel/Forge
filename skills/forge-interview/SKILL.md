@@ -105,17 +105,17 @@ Then run generate. Order is mandatory:
 
 1. Confirm `grill.py --check` reports enough-to-structure (all four slots + ready). If not, refuse and return to invent.
 2. **Name the shape from the type you inferred.** Put your inference in `project_type` and the stages this project actually has in `stages` (slugs, in order — a podcast gets `01-format` … `05-distribute`, a remodel gets its own). Apply lays exactly those. Omit `stages` only when the interview never reached shape; then the generic `01-intake,02-discovery,03-build,04-review` spine fills in. Never offer the human a stage menu.
-3. **Generate BASE** by running `apply_icm_base.py` with `--target` set to the project root. The helper writes numbered stages with CONTEXT stubs, `_config/`, `setup/`, `shared/`, `CONTEXT.md`, and `workflow-map.md` under `forge/`. Paths inside that folder stay relative. Thin skeleton — **not** cloning Captain SoT folders, **not** the website 01–07 pipe unless a later typed pack says so. Do not pass `--target <project>/forge`.
-4. The helper persists `forge/setup/project-brief.md` + `forge/setup/answers.json` with project type / what / who / done / constraints / notes / `ready: true`.
-5. Software sibling stubs **only** if they explicitly asked for software rails later (generated — no template tree dump). Do not prompt for Turbo/Nx as part of this apply.
-6. Spec: write `docs/spec.md` unless they said they do not want one. Then set `write_spec` false. Do not ask. Problem is `spec_problem` if they gave one, else `what`. `spec_dest: forge` writes Forge `specs/<slug>.md` instead.
+3. If they said they do not want a spec, set `write_spec` false in the answers now, before the helper runs. If they gave `spec_problem`, `spec_solution`, or `spec_dest`, put those in the same JSON. Do not ask. Do not set the flag after the helper exits. A missing `write_spec` still writes the spec.
+4. **Generate BASE** by running `apply_icm_base.py` with `--target` set to the project root. The helper writes numbered stages with CONTEXT stubs, `_config/`, `setup/`, `shared/`, `CONTEXT.md`, and `workflow-map.md` under `forge/`, and writes the spec unless step 3 declined it. Paths inside that folder stay relative. Thin skeleton — **not** cloning Captain SoT folders, **not** the website 01–07 pipe unless a later typed pack says so. Do not pass `--target <project>/forge`. Problem is `spec_problem` if they gave one, else `what`. `spec_dest: forge` writes Forge `specs/<slug>.md` instead of `docs/spec.md`.
+5. The helper persists `forge/setup/project-brief.md` + `forge/setup/answers.json` with project type / what / who / done / constraints / notes / `ready: true`.
+6. Software sibling stubs **only** if they explicitly asked for software rails later (generated — no template tree dump). Do not prompt for Turbo/Nx as part of this apply.
 7. Stop. Do not build features. Do not treat `agent-workflows/` one-liners as the ICM deliverable.
 
 ```
 python3 skills/forge-interview/apply_icm_base.py \
   --target <path> \
   --product generic \
-  --answers-json '<slots + ready true>'
+  --answers-json '<slots + ready true; write_spec false if they said no>'
 ```
 
 Generic apply **refuses** if any enough-slot is empty, ready is not yes, or `stages` is anything but a non-empty list of slugs.
