@@ -1,0 +1,4 @@
+schema = "1"
+name = "Forge"
+description = "Interview-first agentic rails that write a project binder"
+skills = ["forge-interview"]
