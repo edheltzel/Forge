@@ -1,0 +1,203 @@
+{
+  "source_forge_commit": "ee40f94ef36f407564eae2ff01b82e979c9fe755",
+  "reason": "Change 0 baseline: generic apply output of Forge before home-folder changes",
+  "answers": "fixtures/snapshot-answers.json",
+  "files": [
+    {
+      "path": "existing/AGENTS.md",
+      "sha256": "eb4824b6071a2989d110b5b9b7f22cccd076351d1ca2ce2986134190a54e25a9"
+    },
+    {
+      "path": "existing/CLAUDE.md",
+      "sha256": "ac12e7788cb5d5eb7d893b63fe36d1f043754b3abd1466f6c5d7ce902f5ac00b"
+    },
+    {
+      "path": "existing/README.md",
+      "sha256": "27922f88ca5cadcb0239998ebe64fea75148a040d14e817e19e0bd33980277a1"
+    },
+    {
+      "path": "existing/docs/spec.md",
+      "sha256": "cbd1299d8779163d26e07011e7a709ff14edc96964899ecd49b01aae3aa58a80"
+    },
+    {
+      "path": "existing/forge/AGENTS.md",
+      "sha256": "5542dc3ef907f6fd6ec577df5ab5a725d217b79231beba3eb7c4bc496880dc23"
+    },
+    {
+      "path": "existing/forge/CONTEXT.md",
+      "sha256": "9467012b16f1c562ba10c0488e4491d3588a9c8f114775ffc8fff646260c8d24"
+    },
+    {
+      "path": "existing/forge/_config/README.md",
+      "sha256": "151f09ac44518fcc29f3d671abba290076ed7c276f125491f4d8528322cc009a"
+    },
+    {
+      "path": "existing/forge/setup/README.md",
+      "sha256": "111bdc41ae4480e4a92a33406ebe9e79aaac200bc167b7cd117302f885316a10"
+    },
+    {
+      "path": "existing/forge/setup/answers.json",
+      "sha256": "f77bf242e47c2498092bffb497998b6a037b9a0475d7095fdd377a59c58c54ce"
+    },
+    {
+      "path": "existing/forge/setup/project-brief.md",
+      "sha256": "727dfe46cb11d0ceb93878ab3185d1ce4522d916a33d3840339b8eb65a6cae6e"
+    },
+    {
+      "path": "existing/forge/setup/questionnaire.md",
+      "sha256": "18744c5d5cd40c85c8956c17cdfc4bd375b969ecfe45b0325e72111c5b15a6e1"
+    },
+    {
+      "path": "existing/forge/shared/README.md",
+      "sha256": "78b2119065eebb2a0306bce4244e4990707e525589f7a3337bd19555fc350944"
+    },
+    {
+      "path": "existing/forge/stages/01-data/CONTEXT.md",
+      "sha256": "7fad90d36d149f3b8cc181deb62c28888e8cbd6e8993e2f712e1dc3eb737b585"
+    },
+    {
+      "path": "existing/forge/stages/01-data/output/.gitignore",
+      "sha256": "245498699e2ac2868024dd4309d0c3452f6f2320c77e7e17e21f3b45644727eb"
+    },
+    {
+      "path": "existing/forge/stages/01-data/output/.gitkeep",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "existing/forge/stages/01-data/references/.gitkeep",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "existing/forge/stages/02-cli/CONTEXT.md",
+      "sha256": "30806dee76b31174f1c465ded0df71887c22bb1fcb450210ac0a9cc67bf0d8c3"
+    },
+    {
+      "path": "existing/forge/stages/02-cli/output/.gitignore",
+      "sha256": "245498699e2ac2868024dd4309d0c3452f6f2320c77e7e17e21f3b45644727eb"
+    },
+    {
+      "path": "existing/forge/stages/02-cli/output/.gitkeep",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "existing/forge/stages/02-cli/references/.gitkeep",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "existing/forge/stages/03-release/CONTEXT.md",
+      "sha256": "7e86ccca871f4b941b3eb8a172efe94f5b5f411ffbb438fc3dfab52e2f8117b9"
+    },
+    {
+      "path": "existing/forge/stages/03-release/output/.gitignore",
+      "sha256": "245498699e2ac2868024dd4309d0c3452f6f2320c77e7e17e21f3b45644727eb"
+    },
+    {
+      "path": "existing/forge/stages/03-release/output/.gitkeep",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "existing/forge/stages/03-release/references/.gitkeep",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "existing/forge/workflow-map.md",
+      "sha256": "e07969418ba78818b7fc66a7dd81708be1622faeea65320e781fa1c4d2989b96"
+    },
+    {
+      "path": "existing/src/app.py",
+      "sha256": "f0e6c1cca5ff124c5eff2985d264c67d982654500f701a3b864df18991c84d75"
+    },
+    {
+      "path": "new/AGENTS.md",
+      "sha256": "7204a4f001eb413fc792bdb5871a6a91c374dab786b7f106bdd17c5bcb914b97"
+    },
+    {
+      "path": "new/docs/spec.md",
+      "sha256": "cbd1299d8779163d26e07011e7a709ff14edc96964899ecd49b01aae3aa58a80"
+    },
+    {
+      "path": "new/forge/AGENTS.md",
+      "sha256": "5542dc3ef907f6fd6ec577df5ab5a725d217b79231beba3eb7c4bc496880dc23"
+    },
+    {
+      "path": "new/forge/CONTEXT.md",
+      "sha256": "9467012b16f1c562ba10c0488e4491d3588a9c8f114775ffc8fff646260c8d24"
+    },
+    {
+      "path": "new/forge/_config/README.md",
+      "sha256": "151f09ac44518fcc29f3d671abba290076ed7c276f125491f4d8528322cc009a"
+    },
+    {
+      "path": "new/forge/setup/README.md",
+      "sha256": "111bdc41ae4480e4a92a33406ebe9e79aaac200bc167b7cd117302f885316a10"
+    },
+    {
+      "path": "new/forge/setup/answers.json",
+      "sha256": "f77bf242e47c2498092bffb497998b6a037b9a0475d7095fdd377a59c58c54ce"
+    },
+    {
+      "path": "new/forge/setup/project-brief.md",
+      "sha256": "727dfe46cb11d0ceb93878ab3185d1ce4522d916a33d3840339b8eb65a6cae6e"
+    },
+    {
+      "path": "new/forge/setup/questionnaire.md",
+      "sha256": "18744c5d5cd40c85c8956c17cdfc4bd375b969ecfe45b0325e72111c5b15a6e1"
+    },
+    {
+      "path": "new/forge/shared/README.md",
+      "sha256": "78b2119065eebb2a0306bce4244e4990707e525589f7a3337bd19555fc350944"
+    },
+    {
+      "path": "new/forge/stages/01-data/CONTEXT.md",
+      "sha256": "7fad90d36d149f3b8cc181deb62c28888e8cbd6e8993e2f712e1dc3eb737b585"
+    },
+    {
+      "path": "new/forge/stages/01-data/output/.gitignore",
+      "sha256": "245498699e2ac2868024dd4309d0c3452f6f2320c77e7e17e21f3b45644727eb"
+    },
+    {
+      "path": "new/forge/stages/01-data/output/.gitkeep",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "new/forge/stages/01-data/references/.gitkeep",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "new/forge/stages/02-cli/CONTEXT.md",
+      "sha256": "30806dee76b31174f1c465ded0df71887c22bb1fcb450210ac0a9cc67bf0d8c3"
+    },
+    {
+      "path": "new/forge/stages/02-cli/output/.gitignore",
+      "sha256": "245498699e2ac2868024dd4309d0c3452f6f2320c77e7e17e21f3b45644727eb"
+    },
+    {
+      "path": "new/forge/stages/02-cli/output/.gitkeep",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "new/forge/stages/02-cli/references/.gitkeep",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "new/forge/stages/03-release/CONTEXT.md",
+      "sha256": "7e86ccca871f4b941b3eb8a172efe94f5b5f411ffbb438fc3dfab52e2f8117b9"
+    },
+    {
+      "path": "new/forge/stages/03-release/output/.gitignore",
+      "sha256": "245498699e2ac2868024dd4309d0c3452f6f2320c77e7e17e21f3b45644727eb"
+    },
+    {
+      "path": "new/forge/stages/03-release/output/.gitkeep",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "new/forge/stages/03-release/references/.gitkeep",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "new/forge/workflow-map.md",
+      "sha256": "e07969418ba78818b7fc66a7dd81708be1622faeea65320e781fa1c4d2989b96"
+    }
+  ]
+}

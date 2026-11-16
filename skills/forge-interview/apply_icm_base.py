@@ -19,9 +19,11 @@ levels["N"] entry when interviewing.
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import json
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -409,6 +411,212 @@ def die(msg: str, code: int = 2) -> None:
     raise SystemExit(code)
 
 
+HOME_QUESTION = (
+    "Do you work from a home folder or a home repo, one place that points "
+    "to all your projects? Or neither?"
+)
+HOME_KEYS = (
+    "home_mode",
+    "home_path",
+    "home_pointer",
+    "home_pointer_text",
+    "home_skills_link",
+    "home_wiki",
+    "home_wiki_page",
+)
+
+
+def _origin_remote(path: Path) -> str | None:
+    proc = subprocess.run(
+        ["git", "-C", str(path), "remote", "get-url", "origin"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    remote = proc.stdout.strip()
+    return remote or None if proc.returncode == 0 else None
+
+
+def _pointer_line(name: str, purpose: str, path: Path) -> str:
+    """`<Name> (<purpose>): <full path>. Clone from <origin> if missing.`
+
+    The path is absolute and resolved, never "~". "Clone from" is left off when
+    the project has no origin remote, which is also what foundry-check requires.
+    """
+    line = f"{name} ({purpose}): {path.resolve()}."
+    remote = _origin_remote(path)
+    if remote:
+        line += f" Clone from {remote} if missing."
+    return line
+
+
+def _same_folder(recorded: str, path: Path) -> bool:
+    """True when a recorded path is the same folder once normalized.
+
+    Expands "~", drops a trailing slash, and resolves symlinks before comparing.
+    """
+    raw = os.path.expanduser(recorded.strip().rstrip("/"))
+    try:
+        return os.path.realpath(raw) == os.path.realpath(path)
+    except OSError:
+        return False
+
+
+def refresh_home_pointer(home: Path, project: Path, name: str, purpose: str) -> None:
+    """Add or refresh this project's line under "## Other Repos" in the home repo.
+
+    Matches an existing line by the folder it points at, not by its text, so a
+    line written with "~", a trailing slash, or a symlink path is refreshed
+    rather than duplicated. Every other line is kept byte for byte.
+    """
+    agents = home / "AGENTS.md"
+    text = agents.read_text(encoding="utf-8") if agents.is_file() else "# Home\n\n## Other Repos\n"
+    if "\n## Other Repos\n" not in f"\n{text}":
+        die(f"{agents} has no '## Other Repos' section")
+    fresh = _pointer_line(name, purpose, project)
+    out, inside, replaced = [], False, False
+    for raw in text.splitlines():
+        if raw.startswith("## "):
+            inside = raw.strip() == "## Other Repos"
+            out.append(raw)
+            continue
+        if inside and not replaced:
+            match = _POINTER_RE.match(raw)
+            if match and _same_folder(match["path"], project):
+                head = _POINTER_HEAD_RE.match(raw)
+                out.append(fresh + (head["tail"] if head else ""))
+                replaced = True
+                continue
+        out.append(raw)
+    if not replaced:
+        section = out.index("## Other Repos") + 1
+        while section < len(out) and out[section].strip():
+            section += 1
+        out.insert(section, fresh)
+    rendered = "\n".join(out)
+    if text.endswith("\n"):
+        rendered += "\n"
+    if rendered != text:
+        agents.write_text(rendered, encoding="utf-8")
+
+
+_POINTER_RE = re.compile(r"^(?P<name>[^ (]+) \([^)]+\): (?P<path>\S+?)\.(?: .*)?$")
+# The standard part of a home line, and any hand-written note after it.
+_POINTER_HEAD_RE = re.compile(
+    r"^[^ (]+ \([^)]+\): \S+?\.(?: Clone from \S+ if missing\.)?(?P<tail>.*)$"
+)
+
+
+def remove_home_pointer(home: Path, project: Path, choose: str | None = None) -> int:
+    """Remove this project's one line under "## Other Repos". Returns an exit code.
+
+    Matches by folder like refresh_home_pointer. One match: drop it and print
+    "Removed: <line>". No match: say so and leave the file byte for byte. Two or
+    more: list them and ask, unless --choose names one. Touches nothing but
+    that line.
+    """
+    agents = home / "AGENTS.md"
+    if not agents.is_file():
+        die(f"{agents} does not exist")
+    text = agents.read_text(encoding="utf-8")
+    lines = text.splitlines()
+    matches: list[int] = []
+    inside = False
+    for index, raw in enumerate(lines):
+        if raw.startswith("## "):
+            inside = raw.strip() == "## Other Repos"
+            continue
+        if inside:
+            match = _POINTER_RE.match(raw)
+            if match and _same_folder(match["path"], project):
+                matches.append(index)
+    resolved = os.path.realpath(os.path.expanduser(str(project)))
+    if not matches:
+        print(f"No line in {home}/AGENTS.md points at {resolved}. Nothing changed.")
+        return 0
+    if len(matches) > 1 and choose is None:
+        print(f"More than one line in {home}/AGENTS.md points at {resolved}:")
+        for number, index in enumerate(matches, start=1):
+            print(f"  {number}. {lines[index]}")
+        print("Which one should go? Rerun with --choose <number>.")
+        return 1
+    pick = 0
+    if choose is not None:
+        if not choose.isdigit() or not 1 <= int(choose) <= len(matches):
+            die(f"--choose must be a number from 1 to {len(matches)}")
+        pick = int(choose) - 1
+    index = matches[pick]
+    removed = lines.pop(index)
+    rendered = "\n".join(lines)
+    if text.endswith("\n"):
+        rendered += "\n"
+    agents.write_text(rendered, encoding="utf-8")
+    print(f"Removed: {removed}")
+    return 0
+
+
+def saved_home(answers: dict) -> dict | None:
+    """The home block already in answers, when it is still usable.
+
+    home_mode "none" always stands. A "folder" or "repo" answer is reused only
+    while its home_path still exists and holds AGENTS.md; a path that vanished
+    means the question has to be asked again.
+    """
+    mode = answers.get("home_mode")
+    if mode == "none" and not any(k in answers for k in HOME_KEYS if k != "home_mode"):
+        return {"home_mode": "none"}
+    if mode not in {"folder", "repo"}:
+        return None
+    if any(k not in answers for k in HOME_KEYS):
+        return None
+    path = Path(str(answers.get("home_path", "")))
+    if not path.is_dir() or not (path / "AGENTS.md").is_file():
+        die(
+            f"Your saved home {mode} at {path} is gone or has no AGENTS.md. "
+            f"{HOME_QUESTION}"
+        )
+    return {k: answers[k] for k in HOME_KEYS}
+
+
+def resolve_home(answers: dict, home_answer: str | None) -> dict:
+    """Fold the home answer into answers. Prints the one line the run owes.
+
+    No saved answer and no --home-answer: behave exactly as before. The home
+    question belongs to the interview, which passes the answer here; a bare
+    apply is never blocked on it. An unclear answer saves nothing and asks
+    again. A saved answer is reused with no question. A "folder" or "repo"
+    answer is saved and reported as not applied yet: this version writes
+    nothing to the home repo.
+    """
+    saved = saved_home(answers)
+    if saved is not None and (home_answer is None or saved["home_mode"] == "none"):
+        if saved["home_mode"] == "none":
+            line = "Using your saved home answer: neither."
+        else:
+            line = f"Using your saved home answer: {saved['home_mode']} {saved['home_path']}"
+        print(line)
+        return answers
+    if home_answer is None:
+        return answers
+    parsed = _grill.parse_home_answer(home_answer)
+    if parsed is None and home_answer.strip():
+        head = home_answer.split(";", 1)[0].strip()
+        word, _, remainder = head.partition(" ")
+        if word.lower() in {"folder", "repo"} and remainder.strip():
+            candidate = Path(remainder.strip()).expanduser()
+            if not candidate.is_dir() or not (candidate / "AGENTS.md").is_file():
+                die(
+                    f"{candidate} is not a home {word.lower()}: it must already "
+                    "exist and contain AGENTS.md. Forge never creates it."
+                )
+    if parsed is None:
+        die(f"That answer is not clear. {HOME_QUESTION}")
+    assert parsed is not None
+    merged = dict(answers)
+    merged.update(parsed)
+    return merged
+
+
 def write_text(path: Path, body: str, *, clobber: bool = True) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     if not clobber and path.exists():
@@ -610,6 +818,81 @@ def spec_pointer_line(target: Path, answers: dict, forge_root: Path) -> str | No
         return f"- Spec: Forge `{shown}`."
 
 
+def _slug(text: str) -> str:
+    return "".join(ch if ch.isalnum() else "-" for ch in text.lower()).strip("-") or "project"
+
+
+def wiki_page_path(answers: dict, project_name: str) -> Path | None:
+    """<home_path>/wiki/projects/<slug>.md when the answer asks for a wiki page."""
+    if answers.get("home_mode") not in {"folder", "repo"}:
+        return None
+    if answers.get("home_wiki") not in {"create", "link"}:
+        return None
+    home = str(answers.get("home_path") or "").rstrip("/")
+    if not home:
+        return None
+    name = answers.get("home_wiki_page") or answers.get("home_pointer") or project_name
+    return Path(home) / "wiki" / "projects" / f"{_slug(str(name))}.md"
+
+
+def home_pointer_lines(answers: dict, project_name: str) -> list[str]:
+    """Lines the home answer adds inside the forge-icm block. Text only."""
+    if answers.get("home_mode") not in {"folder", "repo"}:
+        return []
+    home = str(answers.get("home_path") or "").rstrip("/")
+    if not home:
+        return []
+    lines = []
+    if answers.get("home_skills_link") is True:
+        lines.append(f"- Shared skills: {home}/skills/.")
+    page = wiki_page_path(answers, project_name)
+    if page is not None:
+        lines.append(f"- Wiki: {page}")
+    return lines
+
+
+def write_wiki_page(answers: dict, project: Path, fallback_name: str) -> None:
+    """Create the project's wiki page and list it in wiki/index.md.
+
+    Only for home_wiki "create". Never overwrites: an existing page is left
+    alone and simply linked. The index gains one line, once.
+    """
+    if answers.get("home_wiki") != "create":
+        return
+    page = wiki_page_path(answers, fallback_name)
+    if page is None:
+        return
+    rel = page.relative_to(page.parents[1]).as_posix()
+    name = str(answers.get("home_wiki_page") or answers.get("home_pointer") or fallback_name)
+    if not page.exists():
+        body = [
+            f"# {name}",
+            "",
+            f"Project: {project.resolve()}",
+            "",
+            "## What",
+            str(answers.get("what") or "").strip(),
+            "",
+            "## Who",
+            str(answers.get("who") or "").strip(),
+            "",
+            "## Done when",
+            str(answers.get("done") or "").strip(),
+            "",
+            "## Constraints",
+            str(answers.get("constraints") or "").strip(),
+            "",
+        ]
+        page.parent.mkdir(parents=True, exist_ok=True)
+        page.write_text("\n".join(body), encoding="utf-8")
+    index = page.parents[1] / "index.md"
+    text = index.read_text(encoding="utf-8") if index.is_file() else "# Wiki\n"
+    if rel in text:
+        return
+    entry = f"- [{name}]({rel})"
+    index.write_text(text.rstrip("\n") + "\n" + entry + "\n", encoding="utf-8")
+
+
 def icm_pointer_block(target: Path, answers: dict, forge_root: Path) -> str:
     ptype = str(answers.get("project_type") or "").strip()
     made = f"an ICM binder ({ptype})" if ptype else "an ICM binder"
@@ -625,6 +908,7 @@ def icm_pointer_block(target: Path, answers: dict, forge_root: Path) -> str:
     spec_line = spec_pointer_line(target, answers, forge_root)
     if spec_line:
         lines.append(spec_line)
+    lines.extend(home_pointer_lines(answers, target.name))
     lines.extend(
         [
             "- Existing project files stay yours. ICM documents the work; it does not edit `src/`.",
@@ -632,6 +916,94 @@ def icm_pointer_block(target: Path, answers: dict, forge_root: Path) -> str:
         ]
     )
     return "\n".join(lines)
+
+
+def marker_span(text: str, start_marker: str, end_marker: str) -> tuple[int, int]:
+    """Offsets of a block's start and end markers, counting only whole lines.
+
+    A marker quoted inside prose (for example in backticks in a contract) is
+    not a block edge. Returns (-1, -1) when either marker is missing as a line.
+    """
+    start = re.search(rf"^{re.escape(start_marker)}[ \t]*$", text, re.M)
+    if start is None:
+        return -1, -1
+    end = re.compile(rf"^{re.escape(end_marker)}[ \t]*$", re.M).search(text, start.end())
+    if end is None:
+        return -1, -1
+    return start.start(), end.start()
+
+
+FOUNDRY_DOCS_START = "<!-- foundry-docs:start -->"
+FOUNDRY_DOCS_END = "<!-- foundry-docs:end -->"
+
+
+def foundry_docs_inner(home: Path) -> str:
+    return (
+        f"Folder docs: follow {home}/docs/self-updating-docs.md. Use a short FOLDER.md in a "
+        "folder you actually change, only if none exists or if asked."
+    )
+
+
+def apply_folder_docs(project: Path, home: Path, prior: str | None, add: bool) -> str | None:
+    """Add or refresh the foundry-docs block at the end of the project's AGENTS.md.
+
+    Returns the state to remember in answers.json: "on" while the block is
+    there, "off" once the user deleted it. A block that was "on" and is now
+    gone was deleted by hand and is never put back unless `add` (the user
+    asked "add the folder-docs rule"). Missing markers otherwise append the
+    block; differing inner text is rewritten in place; matching text writes
+    nothing. Lines outside the block stay byte for byte. Refuses, and leaves
+    the project file alone, when the home's rule file is missing. Never
+    creates FOLDER.md or a docs/ tree.
+    """
+    rule = home / "docs" / "self-updating-docs.md"
+    if not rule.is_file():
+        print(f"Not adding the folder-docs rule: {rule} is missing.")
+        return prior
+    agents = project / "AGENTS.md"
+    if not agents.is_file():
+        print(f"Not adding the folder-docs rule: {agents} is missing.")
+        return prior
+    text = agents.read_text(encoding="utf-8")
+    inner = foundry_docs_inner(home)
+    start, end = marker_span(text, FOUNDRY_DOCS_START, FOUNDRY_DOCS_END)
+    if start != -1 and end > start:
+        body_start = start + len(FOUNDRY_DOCS_START)
+        current = text[body_start:end].strip("\n")
+        if current != inner:
+            agents.write_text(text[:body_start] + "\n" + inner + "\n" + text[end:], encoding="utf-8")
+        return "on"
+    if prior in {"on", "off"} and not add:
+        return "off"
+    block = f"{FOUNDRY_DOCS_START}\n{inner}\n{FOUNDRY_DOCS_END}\n"
+    if text and not text.endswith("\n"):
+        text += "\n"
+    if text and not text.endswith("\n\n"):
+        text += "\n"
+    agents.write_text(text + block, encoding="utf-8")
+    return "on"
+
+
+def _saved_answers(project: Path) -> dict:
+    path = project / "forge" / "setup" / "answers.json"
+    if not path.is_file():
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def refresh_docs(home: Path, project: Path, add: bool) -> int:
+    """`--refresh-docs`: refresh only the foundry-docs block and its saved state."""
+    saved = _saved_answers(project)
+    state = apply_folder_docs(project, home, saved.get("home_folder_docs"), add)
+    path = project / "forge" / "setup" / "answers.json"
+    if saved and state is not None and saved.get("home_folder_docs") != state:
+        saved["home_folder_docs"] = state
+        path.write_text(json.dumps(saved, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return 0
 
 
 def attach_icm_pointer(target: Path, answers: dict, forge_root: Path) -> None:
@@ -643,8 +1015,7 @@ def attach_icm_pointer(target: Path, answers: dict, forge_root: Path) -> None:
         write_text(agents, f"# {title}\n\n{block}\n")
         return
     text = agents.read_text(encoding="utf-8")
-    start = text.find(ICM_POINTER_START)
-    end = text.find(ICM_POINTER_END)
+    start, end = marker_span(text, ICM_POINTER_START, ICM_POINTER_END)
     if start != -1 and end > start:
         text = text[:start] + block + text[end + len(ICM_POINTER_END) :]
     else:
@@ -986,6 +1357,29 @@ def load_answers(path: Path | None, inline: str | None) -> dict:
 
 
 def main() -> None:
+    if "--refresh-docs" in sys.argv[1:]:
+        dp = argparse.ArgumentParser(description="Refresh only the foundry-docs block in a project.")
+        dp.add_argument("--refresh-docs", action="store_true", required=True)
+        dp.add_argument("--home", type=Path, required=True, help="Home repo holding docs/self-updating-docs.md")
+        dp.add_argument("--project", type=Path, required=True, help="Project whose AGENTS.md gets the block")
+        dp.add_argument("--add-folder-docs", action="store_true", help="Put a deleted block back")
+        dargs = dp.parse_args()
+        raise SystemExit(
+            refresh_docs(
+                Path(dargs.home).expanduser(),
+                Path(dargs.project).expanduser(),
+                dargs.add_folder_docs,
+            )
+        )
+    if "--remove-pointer" in sys.argv[1:]:
+        rp = argparse.ArgumentParser(description="Remove one project's line from the home repo.")
+        rp.add_argument("--remove-pointer", type=Path, required=True, help="Project folder whose line goes")
+        rp.add_argument("--home", type=Path, required=True, help="Home repo holding AGENTS.md")
+        rp.add_argument("--choose", default=None, help="Which match to remove when there are several")
+        rargs = rp.parse_args()
+        raise SystemExit(
+            remove_home_pointer(Path(rargs.home).expanduser(), Path(rargs.remove_pointer), rargs.choose)
+        )
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--target", required=True, help="Destination workspace path")
     p.add_argument("--product", choices=("website", "generic"), default="website")
@@ -1005,12 +1399,42 @@ def main() -> None:
     p.add_argument("--answers", type=Path, help="JSON answers file")
     p.add_argument("--answers-json", help="Inline JSON answers")
     p.add_argument(
+        "--home",
+        type=Path,
+        default=None,
+        help="Home repo whose '## Other Repos' gains this project's line.",
+    )
+    p.add_argument(
+        "--project",
+        type=Path,
+        default=None,
+        help="Project the home line points at. Defaults to --target.",
+    )
+    p.add_argument(
+        "--add-folder-docs",
+        action="store_true",
+        help="Put back a foundry-docs block the user deleted (they asked: add the folder-docs rule).",
+    )
+    p.add_argument(
+        "--home-answer",
+        default=None,
+        help=(
+            "Answer to the home question: 'neither', or 'repo <path>' / 'folder <path>' "
+            "with optional '; pointer:' '; purpose:' '; skills: yes|no' '; wiki: link|create|no' '; page:'. "
+            "Omit to reuse a saved answer, or to be asked."
+        ),
+    )
+    p.add_argument(
         "--generic-stages",
         default="01-intake,02-discovery,03-build,04-review",
         help="Comma stage slugs for generic product",
     )
     args = p.parse_args()
     answers = load_answers(args.answers, args.answers_json)
+    answers = resolve_home(answers, args.home_answer)
+    prior_folder_docs = _saved_answers(Path(args.target).expanduser()).get("home_folder_docs") or answers.get(
+        "home_folder_docs"
+    )
     answers = normalize_pack_meta(answers, args.product)
     target = Path(args.target).expanduser().resolve()
 
@@ -1035,6 +1459,16 @@ def main() -> None:
     forge_root = Path(args.forge_root).expanduser().resolve()
     attach_icm_pointer(target, answers, forge_root)
 
+    if answers.get("home_mode") in {"folder", "repo"} and answers.get("home_path"):
+        state = apply_folder_docs(
+            target,
+            Path(str(answers["home_path"])),
+            prior_folder_docs,
+            args.add_folder_docs,
+        )
+        if state is not None:
+            answers["home_folder_docs"] = state
+
     # Durable machine-readable answers (alongside human client.md / brief).
     # Includes experience_level / pack_id / pack_version when website gate ran.
     write_text(
@@ -1045,6 +1479,13 @@ def main() -> None:
     apply_gates(target, answers)
     apply_software_sibling(target, answers)
     spec_path = write_spec(target, answers, args.product, forge_root)
+
+    if args.home is not None and answers.get("home_mode") in {"folder", "repo"}:
+        project = Path(args.project).expanduser() if args.project else target
+        name = answers.get("home_pointer") or project.name
+        purpose = answers.get("home_pointer_text") or "project"
+        refresh_home_pointer(Path(args.home).expanduser(), project, str(name), str(purpose))
+        write_wiki_page(answers, project, target.name)
 
     print(f"generated ICM BASE ({args.product}) → {target}")
     print(

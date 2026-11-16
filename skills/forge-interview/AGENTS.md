@@ -10,6 +10,8 @@ Parent: `skills/AGENTS.md`. Grill machine: `grill.py`. Apply helper: `apply_icm_
 
 ## Local Contracts
 
+- Home question, asked once before the opener. `home_mode` is `none`, `folder`, or `repo`. A `folder` or `repo` answer also saves `home_path` (resolved; must already exist and hold `AGENTS.md`; never created here), `home_pointer`, `home_pointer_text`, `home_skills_link`, `home_wiki` (`link`, `create`, or `no`), and `home_wiki_page`. An unclear answer saves nothing. A saved answer is reused with no question unless its path has vanished. Applied with `--home`: the home line, the wiki page (create never overwrites), and the `Shared skills:` and `Wiki:` lines in the forge-icm block.
+- Folder docs: with `home_mode` folder or repo, apply adds or refreshes a `<!-- foundry-docs:start -->` block at the end of the project's AGENTS.md pointing at `<home_path>/docs/self-updating-docs.md`. `home_folder_docs` in answers.json records `on`, or `off` once the user deleted the block; a deleted block comes back only with `--add-folder-docs` ("add the folder-docs rule"). A missing rule file refuses the block. Never creates FOLDER.md or a docs/ tree. `--refresh-docs --home <home> --project <project>` refreshes only the block.
 - Invent the next question from empty enough-slots. No fixed Q1–Q5 / core-8 product spine. No project-type menu.
 - Enough-to-structure (day one): **what**, **who**, **done**, **constraints** all non-empty after trim. Ready-yes alone does not lay the binder.
 - Offer ready gate only after gap check passes. Exact: "Are you ready for us to structure this project, or is there anything else you want to add?"
@@ -35,6 +37,15 @@ Parent: `skills/AGENTS.md`. Grill machine: `grill.py`. Apply helper: `apply_icm_
 - `python3 skills/forge-interview/prove_fm606.py`
 - `python3 skills/forge-interview/prove_fm325.py` (website apply / pack pointer — later typed pack, not the day-one grill)
 - `python3 skills/forge-interview/prove_issue1.py` (issue 1: type-shaped greenfield, brownfield overlay, spec)
+- `python3 skills/forge-interview/prove_home_question.py` (change 1: home question asked once and saved)
+- `python3 skills/forge-interview/prove_add_pointer.py` (change 2: apply adds or refreshes this project's line in the home repo)
+- `python3 skills/forge-interview/prove_remove_pointer.py` (change 3: `--remove-pointer` drops one line on request only)
+- `python3 skills/forge-interview/prove_skills_link.py` (change 4: `home_skills_link` adds a text-only skills line inside the forge-icm block)
+- `python3 skills/forge-interview/prove_wiki.py` (change 5: `home_wiki` create writes the page once and lists it; link adds the `Wiki:` line)
+- `python3 skills/forge-interview/prove_pointer_note.py` (refreshing a home line keeps any note written after it)
+- `python3 skills/forge-interview/prove_marker_lines.py` (block markers count only as whole lines; a marker quoted in prose is left alone)
+- `python3 skills/forge-interview/prove_home_docs.py` (change 7: the foundry-docs block, refresh, drift, deletion, missing rule file, no FOLDER.md)
+- `python3 skills/forge-interview/prove_snapshot.py` (change 0: generic apply on `fixtures/sample-project` and an empty folder matches `fixtures/snapshots/before/` byte for byte; a second apply on the same folders changes nothing; a fresh rerun matches; temp HOME left empty). `--update --reason "<why>"` writes `snapshots/after/` only; `snapshots/before/` is never rewritten.
 
 ## Child DOX Index
 

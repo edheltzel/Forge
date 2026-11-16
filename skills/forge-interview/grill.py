@@ -8,13 +8,19 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from dataclasses import dataclass, field
+from pathlib import Path
 
 SLOTS: tuple[str, ...] = ("what", "who", "done", "constraints")
 MAX_INVENT_ROUNDS = 12
 
 OPENER = "What are you trying to make or figure out?"
+HOME_QUESTION = (
+    "Do you work from a home folder or a home repo, one place that points "
+    "to all your projects? Or neither?"
+)
 READY_PROMPT = (
     "Are you ready for us to structure this project, or is there anything else you want to add?"
 )
@@ -91,6 +97,54 @@ def invent_question(slot: str) -> str:
 
 def plain_empty(empty: list[str]) -> str:
     return ", ".join(PLAIN[s] for s in empty)
+
+
+def parse_home_answer(text: str) -> dict | None:
+    """A clear home answer as keys to save, or None when it is not clear.
+
+    `neither` saves only home_mode "none". `repo <path>` or `folder <path>`
+    needs a path that already exists and holds AGENTS.md. Optional fields after
+    `;` are `pointer:` (the name on the home line), `purpose:` (the words in its
+    parentheses), `skills: yes|no`, `wiki: link|create|no`, and `page:`. Only
+    `;` followed by one of those field names starts a field, so a purpose may
+    itself contain `;`.
+    """
+    parts = re.split(r";\s*(?=(?:pointer|purpose|skills|wiki|page)\s*:)", text, flags=re.I)
+    head = parts[0].split(";", 1)[0]
+    fields: dict[str, str] = {}
+    for part in parts[1:]:
+        key, _, value = part.partition(":")
+        fields[key.strip().lower()] = value.strip().rstrip(";").strip()
+    mode_field = head.strip()
+    if not mode_field:
+        return None
+    word, _, remainder = mode_field.partition(" ")
+    word = word.lower()
+    if word in {"neither", "none"} and not remainder.strip():
+        return {"home_mode": "none"}
+    if word not in {"folder", "repo"}:
+        return None
+    raw_path = remainder.strip()
+    if not raw_path:
+        return None
+    resolved = Path(raw_path).expanduser().resolve()
+    if not resolved.is_dir() or not (resolved / "AGENTS.md").is_file():
+        return None
+    wiki = fields.get("wiki", "no").lower()
+    if wiki not in {"link", "create", "no"}:
+        return None
+    skills = fields.get("skills", "no").strip().lower()
+    if skills not in {"yes", "no"}:
+        return None
+    return {
+        "home_mode": word,
+        "home_path": str(resolved),
+        "home_pointer": fields.get("pointer", "") or None,
+        "home_pointer_text": fields.get("purpose", ""),
+        "home_skills_link": skills == "yes",
+        "home_wiki": wiki,
+        "home_wiki_page": fields.get("page", "") or None,
+    }
 
 
 def is_ready(answers: dict | None) -> bool:
@@ -311,6 +365,11 @@ def step(
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--slots-json", default="{}", help="JSON object with what/who/done/constraints")
+    p.add_argument(
+        "--home-answer",
+        default=None,
+        help="Answer to the home question. Omit to be asked; unclear asks again.",
+    )
     p.add_argument("--invent-rounds", type=int, default=0)
     p.add_argument("--opener-done", action="store_true")
     p.add_argument(
@@ -327,6 +386,12 @@ def main() -> None:
     )
     args = p.parse_args()
     slots = json.loads(args.slots_json)
+    if not args.check and "home_mode" not in slots:
+        parsed = None if args.home_answer is None else parse_home_answer(args.home_answer)
+        if parsed is None:
+            print(json.dumps({"kind": "ask", "question": HOME_QUESTION, "saved": False}))
+            raise SystemExit(0)
+        slots.update(parsed)
     if args.check:
         answers = {k: slots.get(k, "") for k in SLOTS}
         if "ready" in slots:

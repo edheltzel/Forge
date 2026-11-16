@@ -48,6 +48,12 @@ Out of workflow as required asks: timeline/deadline (only if they volunteer); fo
 
 ## 0. Open
 
+Ask the home question once, before the opener:
+
+> Do you work from a home folder or a home repo, one place that points to all your projects? Or neither?
+
+A clear "neither" saves `home_mode: none` and nothing else. "Repo" or "folder" needs a full path that already exists and contains `AGENTS.md`; Forge never creates it. Save `home_path` (resolved), `home_pointer`, `home_pointer_text`, `home_skills_link`, `home_wiki` (`link`, `create`, or `no`), and `home_wiki_page` in `forge/setup/answers.json`. An unclear answer saves nothing; ask again next run. On a later run with a saved answer, ask nothing and say `Using your saved home answer: ...`. A saved `home_path` that no longer exists or has lost its `AGENTS.md` is asked again. At apply time a yes adds this project's line to the home repo, a `Shared skills:` line when `home_skills_link` is true, and the wiki page or link from `home_wiki`.
+
 Ask the opener (not a project-type menu):
 
 > What are you trying to make or figure out?
@@ -126,6 +132,18 @@ python3 skills/forge-interview/apply_icm_base.py \
 ```
 
 Generic apply **refuses** if any enough-slot is empty, ready is not yes, or `stages` is anything but a non-empty list of slugs.
+
+With a saved `folder` or `repo` home answer, pass `--home <home_path> --project <project path>` so apply adds or refreshes this project's line under `## Other Repos`.
+
+Only when the user says "remove <project> from my home list", run:
+
+```bash
+python3 skills/forge-interview/apply_icm_base.py --remove-pointer <project path> --home <home_path>
+```
+
+One match removes that line. No match changes nothing. More than one match lists them; ask which, then rerun with `--choose <number>`. Never run this on your own; it never touches folders, project files, `forge/`, or wiki pages.
+
+Apply also adds the `foundry-docs` block at the end of the project's `AGENTS.md`. If the user deleted it, leave it out. Only when they say "add the folder-docs rule", pass `--add-folder-docs`. To refresh just that block: `apply_icm_base.py --refresh-docs --home <home_path> --project <project path>`.
 
 ## 5. Close
 
