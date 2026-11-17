@@ -7,7 +7,7 @@ When someone **explicitly asks** for software rails, the apply helper **generate
 Do not quiz Turbo/Nx/host/data/IdP as required interview questions.
 
 ICM BASE is **generated** from interview answers (thin generic skeleton day one; not copied from
-`ForgeTemplates/icm-website-workbench`).
+any template folder).
 
 ## Child DOX Index
 

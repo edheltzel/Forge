@@ -14,7 +14,6 @@ Do not implement the product. Do not build features after apply.
 Captain SoT folders (workbench, ICM `_core`) remain **reference for the interviewing agent** (read during interview) — **never** dumped into the target.
 
 SoT paths (BigMac defaults — **read-only reference**, never apply targets):
-- Website shape reference: `/Users/ed/Developer/ForgeTemplates/icm-website-workbench`
 - ICM conventions reference: `/Users/ed/Developer/AI/Standards/ICM/_core`
 
 Machine gate (preferred after each turn / before apply):

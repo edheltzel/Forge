@@ -52,3 +52,7 @@ An existing folder. It does not have to be an app. If that folder is already ope
 
 Your README stays. `src/` stays if you have one. Forge writes the workflow under `forge/`, next to the files already there.
 
+## If you use a home folder or home repo
+
+Forge asks once whether you work from a home folder or home repo that points to all your projects. "Neither" changes nothing. A "repo" or "folder" answer with an existing path adds this project's line to the home `AGENTS.md`, a `foundry-docs` block to this project's `AGENTS.md`, and, if you asked, a shared-skills line and a wiki page. The answer is saved in `forge/setup/answers.json`. Say "remove <project> from my home list" to take it off.
+

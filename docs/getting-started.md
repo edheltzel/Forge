@@ -21,12 +21,11 @@ A finished Forge interview close that:
 ## Prerequisites
 
 - Cursor
-- The Forge repo at `~/Developer/forge`
-- Captain workbench at `~/Developer/ForgeTemplates/icm-website-workbench` (interview reference only — not copied into targets)
+- The Forge repo at `~/Developer/Forge`
 
 ## Step 1: Open Forge
 
-Open `~/Developer/forge` in Cursor.
+Open `~/Developer/Forge` in Cursor.
 
 You should see `skills/forge-interview/SKILL.md` and `skills/forge-interview/grill.py`.
 
@@ -85,6 +84,16 @@ python3 skills/forge-interview/apply_icm_base.py \
 Apply writes the workflow under `forge/` and a short pointer in root `AGENTS.md`. That pointer names `docs/spec.md` when the spec is written. This prove should show `forge/AGENTS.md`, `forge/_config/`, `forge/setup/project-brief.md`, `forge/stages/…`, and `docs/spec.md`. You should **not** see `stages/` or `CONTEXT.md` at the target root, `apps/` monorepo rails, or a mass-identical dump of the workbench SoT.
 
 Generic apply **refuses** if any of the four slots is empty or `ready` is not yes.
+
+## If you use a home folder or home repo
+
+Before the first question, Forge asks once whether you work from a home folder or home repo: one place that points to all your projects. Answer "neither" and Forge works exactly as above. Answer "repo" or "folder" with its full path (it must already exist and hold an `AGENTS.md`), and at apply time Forge:
+
+- adds or refreshes this project's line under `## Other Repos` in that `AGENTS.md`
+- adds a `foundry-docs` block at the end of this project's `AGENTS.md`, pointing at the home's `docs/self-updating-docs.md`
+- if you asked, adds a shared-skills line and creates or links a wiki page
+
+Forge saves the answer in `forge/setup/answers.json` and does not ask again. To take a project off the home list, say "remove <project> from my home list".
 
 ## What you've learned
 
